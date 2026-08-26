@@ -6,6 +6,7 @@
 | 📊 **Metabase Dashboard (BI)** | [http://localhost:3001/dashboard/2](http://localhost:3001/dashboard/2) | `3001` / `3000` | Usuário: `admin@uea.edu.br` \| Senha: `HopAdmin2024!` |
 | ⚙️ **Apache Hop Server (Engine)** | [http://localhost:8081](http://localhost:8081) | `8081` | Usuário: `cluster` \| Senha: `cluster` |
 | 🐙 **Repositório GitHub (Público)** | [https://github.com/andrespk/trabalho-modulo-6-apache-hop](https://github.com/andrespk/trabalho-modulo-6-apache-hop) | — | Código-fonte completo, testes E2E e documentação |
+| 📑 **Documentação Técnica em PDF** | [Download do PDF Completo](docs/Trabalho_Final_Modulo_6_Apache_Hop_UEA.pdf) | — | Relatório executivo completo em PDF com diagramas e tabelas |
 | 📑 **Apresentação Gamma** | [Link da Apresentação no Gamma](https://gamma.app/docs/Performance-de-Alunos-vs-Sono-Habitos-e-Saude-Mental-4338ehdv1j7sl1b?mode=doc) | — | Slides executivos do projeto |
 
 ---

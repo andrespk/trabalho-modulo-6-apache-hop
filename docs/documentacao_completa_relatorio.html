@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Trabalho Final - Módulo 6: Apache Hop - UEA</title>
+  <!-- Google Fonts & Mermaid.js -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      fontFamily: 'Inter, sans-serif',
+      themeVariables: {
+        darkMode: true,
+        background: '#0f172a',
+        primaryColor: '#3b82f6',
+        primaryTextColor: '#f8fafc',
+        primaryBorderColor: '#60a5fa',
+        lineColor: '#94a3b8',
+        secondaryColor: '#1e293b',
+        tertiaryColor: '#0b1329'
+      }
+    });
+  </script>
+  <style>
+    @page {
+      size: A4;
+      margin: 15mm 15mm 15mm 15mm;
+      @bottom-right {
+        content: counter(page);
+      }
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #0b0f19;
+      color: #cbd5e1;
+      line-height: 1.6;
+      font-size: 13px;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    /* Capa Executiva */
+    .cover-page {
+      page-break-after: always;
+      min-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid #1e293b;
+      background: linear-gradient(145deg, #0f172a 0%, #090d16 100%);
+      padding: 50px 40px;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover-page::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 6px;
+      background: linear-gradient(90deg, #38bdf8, #6366f1, #a855f7);
+    }
+    .cover-header {
+      text-align: center;
+    }
+    .cover-header h3 {
+      color: #38bdf8;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .cover-header h4 {
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 500;
+      margin: 0;
+    }
+    .cover-title-box {
+      text-align: center;
+      margin: 60px 0;
+    }
+    .cover-title-box h1 {
+      font-size: 28px;
+      color: #f8fafc;
+      margin-bottom: 15px;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+    .cover-title-box p {
+      font-size: 15px;
+      color: #94a3b8;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+    .cover-badge {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 15px;
+    }
+    .cover-team {
+      background: #131b2e;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 20px;
+    }
+    .cover-team h5 {
+      color: #e2e8f0;
+      margin: 0 0 10px 0;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .cover-team ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .cover-team li {
+      font-size: 13px;
+      color: #cbd5e1;
+    }
+    .cover-footer {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid #1e293b;
+      padding-top: 15px;
+      color: #64748b;
+      font-size: 12px;
+    }
+
+    /* Estrutura do Conteúdo */
+    h2 {
+      color: #38bdf8;
+      font-size: 20px;
+      border-bottom: 2px solid #1e293b;
+      padding-bottom: 8px;
+      margin-top: 35px;
+      margin-bottom: 16px;
+      font-weight: 700;
+      page-break-after: avoid;
+    }
+    h3 {
+      color: #f1f5f9;
+      font-size: 15px;
+      margin-top: 22px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      page-break-after: avoid;
+    }
+    p, li {
+      color: #94a3b8;
+      font-size: 13px;
+    }
+    strong {
+      color: #f8fafc;
+    }
+
+    /* Cards e Callouts */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .kpi-card {
+      background: #131c31;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+    }
+    .kpi-card .val {
+      font-size: 22px;
+      font-weight: 800;
+      color: #38bdf8;
+      margin: 4px 0;
+    }
+    .kpi-card .title {
+      font-size: 11px;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .kpi-card .sub {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
+    /* Tabelas */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 11.5px;
+      background: #0f172a;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #1e293b;
+      page-break-inside: avoid;
+    }
+    th {
+      background: #1e293b;
+      color: #38bdf8;
+      font-weight: 600;
+      padding: 8px 10px;
+      text-align: left;
+      border: 1px solid #334155;
+    }
+    td {
+      padding: 7px 10px;
+      border: 1px solid #1e293b;
+      color: #cbd5e1;
+    }
+    tr:nth-child(even) {
+      background: rgba(30, 41, 59, 0.4);
+    }
+
+    /* Mermaid Diagrams */
+    .mermaid-box {
+      background: #0d1322;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 18px 0;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+    .mermaid {
+      margin: 0 auto;
+    }
+
+    /* Imagens e Capturas */
+    .img-box {
+      background: #0d1322;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 18px 0;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+    .img-box img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      border: 1px solid #1e293b;
+    }
+    .img-caption {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* Bloco de Código */
+    pre, code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+    }
+    pre {
+      background: #090d16;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      padding: 12px;
+      overflow-x: auto;
+      color: #38bdf8;
+      page-break-inside: avoid;
+    }
+
+    .page-break {
+      page-break-after: always;
+    }
+  </style>
+</head>
+<body>
+<div class="page-container">
+
+  <!-- CAPA EXECUTIVA -->
+  <div class="cover-page">
+    <div class="cover-header">
+      <h3>Universidade do Estado do Amazonas — UEA</h3>
+      <h4>Pós-Graduação em Inteligência Artificial & Engenharia de Dados</h4>
+    </div>
+    
+    <div class="cover-title-box">
+      <h1>Performance Acadêmica vs. Sono, Hábitos Digitais e Saúde Mental</h1>
+      <p>Engenharia de Dados de Ponta a Ponta com Apache Hop 2.5, Arquitetura Medalhão (20 Tabelas), Metabase e Garantia Estrita de Idempotência</p>
+      <div class="cover-badge">Módulo 6 — Orquestração & Pipelines de Dados</div>
+    </div>
+
+    <div class="cover-team">
+      <h5>Equipe de Desenvolvimento & Pesquisa</h5>
+      <ul>
+        <li><strong>Adriano Mourão</strong></li>
+        <li><strong>André Marques</strong></li>
+        <li><strong>Daniel Oliveira</strong></li>
+        <li><strong>Paulo Dourado</strong></li>
+        <li><strong>Thiago Leite</strong></li>
+      </ul>
+    </div>
+
+    <div class="cover-footer">
+      <span>Manaus/AM — 2026</span>
+      <span>Repositório GitHub: andrespk/trabalho-modulo-6-apache-hop</span>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 1: RESUMO EXECUTIVO & LINKS -->
+  <h2>1. 🎯 Resumo Executivo & Acesso aos Ambientes</h2>
+  <p>Este projeto implementa uma solução corporativa completa de engenharia de dados, cobrindo da ingestão automatizada de bases Kaggle via HTTPS até a camada analítica no Metabase, modelando o impacto multidimensional da qualidade do sono, sobrecarga de telas digitais e saúde mental no desempenho acadêmico de 1.000 universitários.</p>
+
+  <div class="card-grid">
+    <div class="kpi-card">
+      <div class="title">Nota Média Geral</div>
+      <div class="val">69.7 pts</div>
+      <div class="sub">Base 1.000 alunos</div>
+    </div>
+    <div class="kpi-card">
+      <div class="title">IQS Médio Sono</div>
+      <div class="val">0.49</div>
+      <div class="sub">Classificação: Alerta</div>
+    </div>
+    <div class="kpi-card">
+      <div class="title">Média Telas</div>
+      <div class="val">4.3h/dia</div>
+      <div class="sub">Redes Sociais + Vídeo</div>
+    </div>
+    <div class="kpi-card">
+      <div class="title">Vulnerabilidade</div>
+      <div class="val">34.7%</div>
+      <div class="sub">Depressão / Ansiedade</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Serviço / Componente</th>
+        <th>URL Local</th>
+        <th>Credenciais</th>
+        <th>Finalidade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Metabase Analytics</strong></td>
+        <td>http://localhost:3001/dashboard/2</td>
+        <td><code>admin@uea.edu.br</code> / <code>HopAdmin2024!</code></td>
+        <td>Dashboard interativo com Donuts, Radares e Tabelas</td>
+      </tr>
+      <tr>
+        <td><strong>Apache Hop Web (UI)</strong></td>
+        <td>http://localhost:8085/ui</td>
+        <td>Workspace: <code>hop-project</code></td>
+        <td>Ambiente Web para inspeção e edição de DAGs e Pipelines</td>
+      </tr>
+      <tr>
+        <td><strong>Preview Web Local</strong></td>
+        <td>http://localhost:8088/dashboard_preview.html</td>
+        <td>Acesso Público Livre</td>
+        <td>Visualizador rápido Chart.js com rótulos de dados</td>
+      </tr>
+      <tr>
+        <td><strong>Repositório GitHub</strong></td>
+        <td>https://github.com/andrespk/trabalho-modulo-6-apache-hop</td>
+        <td>Branch <code>main</code> Pública</td>
+        <td>Código-fonte, DDLs, Pipelines, Testes e CI/CD</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SEÇÃO 2: ARQUITETURA MEDALHÃO -->
+  <h2>2. 🏛️ Arquitetura Medalhão (20 Tabelas Ativas)</h2>
+  <p>A esteira de dados foi desenhada sob os princípios modernos da Arquitetura Medalhão com particionamento em 5 camadas relacionais no SQLite:</p>
+
+  <div class="mermaid-box">
+    <div class="mermaid">
+      flowchart TD
+        classDef ref fill:#1e293b,stroke:#0ea5e9,stroke-width:2px,color:#fff;
+        classDef bronze fill:#451a03,stroke:#d97706,stroke-width:2px,color:#fff;
+        classDef silver fill:#1e293b,stroke:#94a3b8,stroke-width:2px,color:#fff;
+        classDef gold fill:#713f12,stroke:#eab308,stroke-width:2px,color:#fff;
+        classDef plat fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#fff;
+
+        R[1. Reference Layer: ref_kpi_normalidade]:::ref
+        
+        B1[raw_sleep_efficiency]:::bronze
+        B2[raw_student_performance]:::bronze
+        B3[raw_student_habits]:::bronze
+        B4[raw_student_mental_health]:::bronze
+
+        S1[dim_sono]:::silver
+        S2[dim_alunos]:::silver
+        S3[dim_habitos]:::silver
+        S4[dim_saude_mental]:::silver
+
+        G1[students_grade_performance_sleep]:::gold
+        G2[students_grade_performance_habits]:::gold
+        G3[students_grade_performance_mental_health]:::gold
+
+        P1[kpi_resumo]:::plat
+        P2[kpi_eficiencia_estudo]:::plat
+        P3[kpi_risco_academico]:::plat
+        P4[kpi_resiliencia_habitos]:::plat
+        P5[kpi_curso_saude_mental]:::plat
+        P6[kpi_faixa_etaria_performance]:::plat
+        P7[kpi_genero_performance]:::plat
+        P8[kpi_habitos_vida_performance]:::plat
+
+        R --> S1
+        B1 & B2 & B3 & B4 --> S1 & S2 & S3 & S4
+        S1 & S2 & S3 & S4 --> G1 & G2 & G3
+        G1 & G2 & G3 --> P1 & P2 & P3 & P4 & P5 & P6 & P7 & P8
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SEÇÃO 3: ORQUESTRAÇÃO APACHE HOP -->
+  <h2>3. 🔄 Orquestração do Workflow Master e Pipelines</h2>
+  <p>O workflow <code>orquestrador_principal.hwf</code> gerencia a esteira de forma modular e idempotente, executando ações SQL, chamadas de pipelines e gates de validação com fail-safe automático:</p>
+
+  <div class="mermaid-box">
+    <div class="mermaid">
+      flowchart LR
+        classDef startNode fill:#10b981,stroke:#059669,stroke-width:2px,color:#fff;
+        classDef actionNode fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff;
+        classDef pipeNode fill:#0f172a,stroke:#8b5cf6,stroke-width:2px,color:#fff;
+        classDef errNode fill:#ef4444,stroke:#b91c1c,stroke-width:2px,color:#fff;
+
+        Start([Start]):::startNode --> A1[00_Init_Schema_SQL]:::actionNode
+        A1 -->|Sucesso| A2[01_Ingestao_Bronze_Ref]:::pipeNode
+        A1 -->|Erro| Err[Tratamento_Erro_Abort]:::errNode
+        A2 -->|Sucesso| A3[02_Validar_Contagens]:::actionNode
+        A2 -->|Erro| Err
+        A3 -->|Sucesso| Fim([Fim: Exit 0]):::startNode
+        A3 -->|Erro| Err
+    </div>
+  </div>
+
+  <h3>Detalhamento dos Componentes Utilizados:</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Nó / Componente</th>
+        <th>Tipo</th>
+        <th>Responsabilidade Técnica</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>Start</code></td>
+        <td>ActionSpecial</td>
+        <td>Inicialização do contexto transacional e variáveis do Hop (<code>${PROJECT_HOME}</code>).</td>
+      </tr>
+      <tr>
+        <td><code>00_Init_Schema_SQL</code></td>
+        <td>ActionSql</td>
+        <td>Execução do DDL idempotente com índices, PRAGMAs e conectividade JDBC SQLite.</td>
+      </tr>
+      <tr>
+        <td><code>01_Ingestao_Bronze_Ref</code></td>
+        <td>ActionPipeline</td>
+        <td>Executa <code>01_raw_staging.hpl</code> com transforms <code>CsvInput</code>, <code>Constant</code>, <code>SelectValues</code> e <code>TableOutput</code>.</td>
+      </tr>
+      <tr>
+        <td><code>02_Validar_Contagens</code></td>
+        <td>ActionSql</td>
+        <td>Quality gate que atesta contagens exatas nas 20 tabelas antes da publicação.</td>
+      </tr>
+      <tr>
+        <td><code>Tratamento_Erro_Abort</code></td>
+        <td>ActionAbort</td>
+        <td>Interrompe o fluxo imediatamente emitindo log de alerta caso ocorra falha.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SEÇÃO 4: DASHBOARD METABASE NATIVO -->
+  <h2>4. 📊 Painel Executivo no Metabase (Dashboard ID 2)</h2>
+  <p>O dashboard foi estruturado em 3 visões analíticas contendo 13 cards otimizados (KPIs numéricos, Donuts de composição, Radar de performance e Tabelas multidimensionais):</p>
+
+  <div class="img-box">
+    <img src="file:///C:/AndreMarques/projects/curso-ia-uea/modulo-6-apache-hop/trabalho-modulo-6-apache-hop/docs/images/metabase_native_dashboard.png" alt="Metabase Native Dashboard">
+    <div class="img-caption">Figura 1: Dashboard nativo no Metabase (Porta 3001) com 100% dos dados renderizados sem duplicatas.</div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SEÇÃO 5: PRINCIPAIS INSIGHTS ANALÍTICOS -->
+  <h2>5. 🧠 Principais Descobertas e Correlações dos Dados</h2>
+
+  <h3>A. O Impacto da Exposição a Telas na Performance Acadêmica</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Faixa de Telas</th>
+        <th>Perfil de Estilo de Vida</th>
+        <th>Amostra</th>
+        <th>Nota Média</th>
+        <th>Horas Estudo</th>
+        <th>Exercício/Sem</th>
+        <th>Score SQD</th>
+        <th>Taxa Aprovação (≥ 70)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Baixo (&lt;2h)</strong></td>
+        <td>Alta Performance (Foco Digital & Exercício)</td>
+        <td>90 alunos</td>
+        <td><strong>76.5 pts</strong></td>
+        <td>3.41h</td>
+        <td>3.2 dias</td>
+        <td><strong>2.545</strong></td>
+        <td><strong>72.2%</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Moderado (2-4h)</strong></td>
+        <td>Hábitos Equilibrados</td>
+        <td>346 alunos</td>
+        <td><strong>72.9 pts</strong></td>
+        <td>3.63h</td>
+        <td>3.1 dias</td>
+        <td><strong>1.120</strong></td>
+        <td><strong>56.1%</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Alto (4-6h)</strong></td>
+        <td>Hábitos em Alerta (Sobrecarga de Telas)</td>
+        <td>429 alunos</td>
+        <td><strong>67.4 pts</strong></td>
+        <td>3.53h</td>
+        <td>3.0 dias</td>
+        <td><strong>0.700</strong></td>
+        <td><strong>46.4%</strong></td>
+      </tr>
+      <tr>
+        <td><strong>Muito Alto (&gt;6h)</strong></td>
+        <td>Crítico (Sedentarismo e Dispersão)</td>
+        <td>135 alunos</td>
+        <td><strong>65.1 pts</strong></td>
+        <td>3.20h</td>
+        <td>2.7 dias</td>
+        <td><strong>0.450</strong></td>
+        <td><strong>39.3%</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>B. Efeito de Maturidade Acadêmica por Faixa Etária</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Faixa Etária</th>
+        <th>Etapa Acadêmica</th>
+        <th>Amostra</th>
+        <th>Nota Média Exame</th>
+        <th>Tempo Telas</th>
+        <th>Autorregulação</th>
+        <th>Taxa de Risco</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>18-19 anos</strong></td>
+        <td>Calouros (Início)</td>
+        <td>363 alunos</td>
+        <td>69.9 pts</td>
+        <td>4.3h/dia</td>
+        <td>0.650</td>
+        <td>32.8%</td>
+      </tr>
+      <tr>
+        <td><strong>20-22 anos</strong></td>
+        <td>Intermediários (Meio)</td>
+        <td>384 alunos</td>
+        <td>68.9 pts</td>
+        <td>4.4h/dia</td>
+        <td>0.644</td>
+        <td>34.1%</td>
+      </tr>
+      <tr>
+        <td><strong>23-25+ anos</strong></td>
+        <td>Veteranos / Formandos</td>
+        <td>253 alunos</td>
+        <td><strong>70.2 pts</strong></td>
+        <td><strong>4.2h/dia</strong></td>
+        <td><strong>0.659</strong></td>
+        <td><strong>29.2%</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SEÇÃO 6: TESTES AUTOMATIZADOS E IDEMPOTÊNCIA -->
+  <h2>6. 🧪 Suíte de Testes E2E Automatizados (Playwright)</h2>
+  <p>A solução conta com validação automatizada de ponta a ponta que atesta integridade relacional, conformidade matemática e idempotência:</p>
+
+  <pre>
+=====================================================================
+  INICIANDO EXECUÇÃO DA SUÍTE DE TESTES E2E COM PLAYWRIGHT
+=====================================================================
+[PASS] Teste 01: Ingestão HTTPS Resiliente (Kaggle APIs)
+[PASS] Teste 02: Execução End-to-End da Pipeline ETL Apache Hop
+[PASS] Teste 03: Validação de Integridade e Contagens nas 20 Tabelas
+[PASS] Teste 04: Garantia de Idempotência da Esteira ETL (Reprocessamento 2x consecutivo)
+[PASS] Teste 05: Regras de Qualidade de Dados e Ranges Numéricos
+[PASS] Teste 06: Renderização de Dashboard com Donuts, Radares e Barras (Playwright)
+=====================================================================
+  SUÍTE CONCLUÍDA: 6/6 APROVADOS (100%)
+=====================================================================
+  </pre>
+
+  <div class="img-box">
+    <img src="file:///C:/AndreMarques/projects/curso-ia-uea/modulo-6-apache-hop/trabalho-modulo-6-apache-hop/docs/images/hop_web_modular_dag.png" alt="Apache Hop Web UI">
+    <div class="img-caption">Figura 2: Workspace do projeto carregado no Apache Hop Web (Porta 8085).</div>
+  </div>
+
+</div>
+</body>
+</html>
