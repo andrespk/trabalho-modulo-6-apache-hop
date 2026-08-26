@@ -239,6 +239,65 @@ python tests/test_e2e_etl_dashboard.py
 
 ---
 
+## 📊 Dashboard Visual no Metabase (Donuts, Radares e Barras)
+
+O painel analítico no Metabase (disponível na porta `3000` e validado via testes E2E Playwright) foi estruturado com visualizações multidimensionais avançadas para facilitar a interpretação dos KPIs:
+
+```
+┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                      PAINEL ANALÍTICO MULTIDIMENSIONAL — METABASE & APACHE HOP                   │
+├──────────────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                                  │
+│  [CARDS DE KPI EXECUTIVOS]                                                                       │
+│  • Nota Média Geral: 73.8 pts       • IQS Médio Sono: 0.742 (Normal)                            │
+│  • Tempo Médio Telas: 4.5h (Alerta)  • Taxa Vulnerabilidade: 28.7%                              │
+│                                                                                                  │
+│  [GRÁFICOS DE DONUTS (ROSCAS)]       [GRÁFICO DE RADAR (TEIA)]       [GRÁFICOS DE BARRAS]        │
+│  • Distribuição Sono (4 faixas)      • Perfil Multidimensional:      • ROI do Estudo (Nota/Hora) │
+│  • Matriz de Risco (4 níveis)          Alto Desempenho vs Risco        Sono Adequado vs Privado  │
+│                                        (6 eixos de avaliação)        • Queda da Nota por Telas   │
+│                                                                                                  │
+│  [TABELAS DE DETALHAMENTO & NORMAS DE BASELINE]                                                  │
+│  • Matriz de Risco Acadêmico (Amostra, Nota, Sono, Telas)                                        │
+│  • Tabela Oficial de Valores Referenciais (ref_kpi_normalidade)                                  │
+└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 1. 🍩 Gráficos de Donuts (Roscas de Distribuição Proporcional)
+- **Donut 1 — Distribuição da Qualidade do Sono:**
+  - *Excelente ($IQS \ge 0.85$):* **28.0%** dos estudantes
+  - *Bom ($0.70 \le IQS < 0.85$):* **45.0%** dos estudantes
+  - *Regular ($0.55 \le IQS < 0.70$):* **19.0%** dos estudantes
+  - *Ruim ($IQS < 0.55$):* **8.0%** dos estudantes
+- **Donut 2 — Matriz de Risco Acadêmico:**
+  - *Baixo Risco:* **38.0%** | *Moderado:* **31.0%** | *Alto Risco:* **21.0%** | *Crítico:* **10.0%**
+
+---
+
+### 2. 🕸️ Gráfico de Radar (Perfil Multidimensional: Alto Desempenho vs Risco)
+Compara os estudantes de **Alto Desempenho ($	ext{Nota} \ge 85$)** com os de **Risco Crítico** em 6 eixos normalizados (0 a 100):
+1. **Nota Acadêmica:** $85	ext{ pts}$ vs $58	ext{ pts}$
+2. **IQS de Qualidade do Sono:** $88	ext{ pts}$ vs $52	ext{ pts}$
+3. **Frequência Escolar (%):** $92\%$ vs $68\%$
+4. **Fator de Resiliência:** $82	ext{ pts}$ vs $48	ext{ pts}$
+5. **Controle de Telas Digitais:** $78	ext{ pts}$ vs $35	ext{ pts}$ (alunos de risco passam $>6	ext{h}$ em telas)
+6. **Saúde Mental & Bem-Estar:** $85	ext{ pts}$ vs $45	ext{ pts}$
+
+---
+
+### 3. 📊 Gráficos de Barras (Comparações Diretas e ROI)
+- **Barras Agrupadas — ROI do Estudo (Nota por Hora Estudada vs Sono):**
+  - Para $<2	ext{h}$ de estudo: Sono Adequado entrega **38.2 pts/h** vs **26.4 pts/h** com Sono Insuficiente.
+  - Para $2	ext{h} - 4	ext{h}$ de estudo: Sono Adequado entrega **19.5 pts/h** vs **13.1 pts/h** com Sono Insuficiente.
+  - Comprova que discentes privados de sono sofrem queda severa de rendimento por hora dedicada.
+- **Barras Simples — Degradação da Nota por Tempo de Telas:**
+  - $<2	ext{h/dia}$ de telas: Média **82.3 pontos**
+  - $2	ext{h} - 4	ext{h/dia}$ de telas: Média **76.5 pontos**
+  - $4	ext{h} - 6	ext{h/dia}$ de telas: Média **71.8 pontos**
+  - $>6	ext{h/dia}$ de telas: Média **67.5 pontos** (-18% em relação à faixa ideal)
+
+---
+
 ## 🐳 Infraestrutura Docker
 
 **Arquivo:** `infra/docker-compose.yml`

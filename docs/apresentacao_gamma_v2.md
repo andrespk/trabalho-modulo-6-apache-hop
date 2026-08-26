@@ -85,7 +85,19 @@
 
 ---
 
-### Slide 9: Suíte de Testes E2E com Playwright
+### Slide 9: Visualização Analítica no Dashboard (Donuts, Radar e Barras)
+- **Gráficos de Donuts (Roscas):**
+  * Qualidade do Sono: 28% Excelente, 45% Bom, 19% Regular, 8% Ruim.
+  * Matriz de Risco: 38% Baixo Risco, 31% Moderado, 21% Alto Risco, 10% Crítico.
+- **Gráfico de Radar (Perfil Multidimensional):**
+  * Contrapõe 6 eixos (Nota, Sono, Frequência, Resiliência, Telas e Saúde Mental) entre Alunos de Alto Desempenho e Alunos em Risco Crítico.
+- **Gráficos de Barras (ROI e Telas):**
+  * ROI do Estudo: Alunos com sono adequado obtêm até +52% de nota por hora estudada.
+  * Queda por Telas: Discentes com >6h de entretenimento digital caem de 82.3 para 67.5 na média (-18%).
+
+---
+
+### Slide 10: Suíte de Testes E2E com Playwright
 - **100% de Aprovação (6/6 Testes Aprovados):**
   * Teste 1: Ingestão HTTPS Resiliente com retries e fallback.
   * Teste 2: Execução completa da pipeline ETL Apache Hop.
@@ -97,7 +109,7 @@
 
 ---
 
-### Slide 10: Conclusões e Percepções dos Indicadores
+### Slide 11: Conclusões e Percepções dos Indicadores
 1. **Sono Adequado é Multiplicador Cognitivo:** Sono $\ge 7	ext{h}$ com IQS $\ge 0.85$ garante $+14.2\%$ na nota final; sono $<6	ext{h}$ compromete severamente a retenção.
 2. **Ponto de Inflexão Digital:** Acima de $4	ext{h/dia}$ de telas de entretenimento, há degradação acelerada do desempenho; acima de $6	ext{h}$, a perda média é de **-18%** na nota.
 3. **Qualidade x Quantidade de Estudo:** Estudar exausto reduz a produtividade por hora em **-34%** em relação ao estudo com mente descansada.

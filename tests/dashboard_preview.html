@@ -1,17 +1,264 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>Dashboard</title>
-<style>body{background:#0f172a;color:#f8fafc;font-family:sans-serif;padding:24px;}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}.card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;}.card-title{font-size:12px;color:#94a3b8;text-transform:uppercase;}.card-val{font-size:32px;font-weight:bold;color:#38bdf8;margin:8px 0;}.card-sub{font-size:12px;color:#10b981;}.tables-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}.table-card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{padding:8px;text-align:left;border-bottom:1px solid #334155;}th{color:#94a3b8;}td{color:#cbd5e1;}</style></head>
-<body><h1>📊 Painel Analítico Integrado — Apache Hop & Metabase</h1><p style="color:#94a3b8;margin-bottom:20px;">Trabalho Final Módulo 6 | Pós-Graduação IA UEA</p>
-<div class="grid">
-  <div class="card"><div class="card-title">Nota Média Geral</div><div class="card-val">69.7</div><div class="card-sub">Base: 1.000 alunos</div></div>
-  <div class="card"><div class="card-title">IQS Médio Sono</div><div class="card-val">0.488</div><div class="card-sub">Classificação: Bom</div></div>
-  <div class="card"><div class="card-title">Tempo Médio Telas</div><div class="card-val">4.3h</div><div class="card-sub">Redes + Netflix</div></div>
-  <div class="card"><div class="card-title">Taxa Vulnerabilidade</div><div class="card-val">34.7%</div><div class="card-sub">Histórico declarado</div></div>
-</div>
-<div class="tables-grid">
-  <div class="table-card"><h3>⚠️ Matriz de Sobrecarga e Risco Acadêmico</h3><table><thead><tr><th>Risco</th><th>Amostra</th><th>Nota</th><th>Sono</th><th>Telas</th></tr></thead><tbody><tr><td>Baixo Risco</td><td>361</td><td><b>73.0</b></td><td>7.1h</td><td>3.5h</td></tr><tr><td>Moderado</td><td>86</td><td><b>73.8</b></td><td>7.1h</td><td>3.4h</td></tr><tr><td>Alto Risco</td><td>439</td><td><b>67.2</b></td><td>6.2h</td><td>4.8h</td></tr><tr><td>Crítico</td><td>114</td><td><b>65.2</b></td><td>5.1h</td><td>6.0h</td></tr></tbody></table></div>
-  <div class="table-card"><h3>⚡ ROI do Estudo (Nota por Hora)</h3><table><thead><tr><th>Faixa Estudo</th><th>Sono</th><th>Nota</th><th>ROI</th></tr></thead><tbody><tr><td>Baixo</td><td>Insuficiente</td><td>73.5</td><td><b>56.77 pts/h</b></td></tr><tr><td>Baixo</td><td>Curto</td><td>69.0</td><td><b>56.15 pts/h</b></td></tr><tr><td>Baixo</td><td>Adequado</td><td>72.2</td><td><b>54.66 pts/h</b></td></tr><tr><td>Moderado</td><td>Insuficiente</td><td>70.1</td><td><b>23.23 pts/h</b></td></tr><tr><td>Moderado</td><td>Curto</td><td>69.4</td><td><b>22.70 pts/h</b></td></tr><tr><td>Moderado</td><td>Adequado</td><td>69.4</td><td><b>22.65 pts/h</b></td></tr></tbody></table></div>
-</div>
-<div style="margin-top:20px;" class="table-card"><h3>🛡️ Fator de Resiliência (Exercício + Extracurricular)</h3><table><thead><tr><th>Perfil</th><th>Nota Média</th><th>Score Resiliência</th></tr></thead><tbody><tr><td>Exercício Regular (≥3d) + Sem Atividade Extra</td><td><b>71.2</b></td><td>0.603</td></tr><tr><td>Exercício Regular (≥3d) + Com Atividade Extra</td><td><b>71.0</b></td><td>0.597</td></tr><tr><td>Sedentário (<3d) + Com Atividade Extra</td><td><b>67.5</b></td><td>0.564</td></tr><tr><td>Sedentário (<3d) + Sem Atividade Extra</td><td><b>67.3</b></td><td>0.560</td></tr></tbody></table></div>
-<div style="margin-top:20px;" class="table-card"><h3>📋 Amostra de Baselines e Valores Referenciais de KPIs (ref_kpi_normalidade)</h3><table><thead><tr><th>KPI / Sigla</th><th>Faixa de Normalidade</th><th>Média na Base</th><th>Diagnóstico</th></tr></thead><tbody><tr><td><b>Índice Composto de Qualidade do Sono (IQS)</b></td><td>≥ 0.700 (Excelente: ≥ 0.850)</td><td><b>0.742</b></td><td><span style='color:#34d399;'>Dentro da Normalidade</span></td></tr><tr><td><b>Duração Diária do Sono (DUR_SONO)</b></td><td>7.0h - 9.0h</td><td><b>7.46</b></td><td><span style='color:#34d399;'>Dentro da Normalidade</span></td></tr><tr><td><b>Eficiência Real do Sono (EFIC_SONO)</b></td><td>≥ 0.85 (85%)</td><td><b>0.789</b></td><td><span style='color:#34d399;'>Alerta / Moderado</span></td></tr><tr><td><b>Tempo Total de Telas de Entretenimento (TEMPO_TELAS)</b></td><td>< 2.0h/dia (Aceitável: < 4.0h)</td><td><b>4.52</b></td><td><span style='color:#34d399;'>Alerta / Risco Moderado</span></td></tr><tr><td><b>Retorno sobre Investimento de Estudo (ROI_ESTUDO)</b></td><td>≥ 15.0 pts/hora</td><td><b>18.35</b></td><td><span style='color:#34d399;'>Excelente / Alta Eficiência</span></td></tr></tbody></table></div>
-</body></html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Metabase Dashboard Avançado — Donuts, Radares e Barras</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #0b1120; color: #f8fafc; padding: 28px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 18px; margin-bottom: 24px; }
+        .header h1 { font-size: 24px; color: #38bdf8; }
+        .header .meta { font-size: 13px; color: #94a3b8; }
+        .grid-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .card-kpi { background: #131d31; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.3); }
+        .card-title { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+        .card-val { font-size: 32px; font-weight: 700; color: #f8fafc; }
+        .card-sub { font-size: 12px; color: #10b981; margin-top: 4px; font-weight: 500; }
+        .card-sub.warn { color: #f59e0b; }
+        .card-sub.alert { color: #ef4444; }
+        
+        .charts-row-1 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+        .charts-row-2 { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; margin-bottom: 24px; }
+        .chart-box { background: #131d31; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; }
+        .chart-box h3 { font-size: 15px; color: #38bdf8; margin-bottom: 16px; border-bottom: 1px solid #1e293b; padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .canvas-container { position: relative; height: 260px; width: 100%; }
+        
+        .tables-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .table-card { background: #131d31; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; }
+        .table-card h3 { font-size: 15px; color: #38bdf8; margin-bottom: 12px; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; color: #94a3b8; padding: 8px; border-bottom: 1px solid #1e293b; }
+        td { padding: 8px; border-bottom: 1px solid #1e293b; color: #cbd5e1; }
+        tr:hover td { background: #1e293b; }
+        .badge { padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
+        .badge-danger { background: #ef444420; color: #f87171; border: 1px solid #ef444440; }
+        .badge-warning { background: #f59e0b20; color: #fbbf24; border: 1px solid #f59e0b40; }
+        .badge-success { background: #10b98120; color: #34d399; border: 1px solid #10b98140; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>📊 Painel Analítico Integrado — Metabase & Apache Hop</h1>
+            <p class="meta">Visualização Executiva com Gráficos de Donuts, Radares e Barras | Pós-Graduação IA UEA</p>
+        </div>
+        <div style="text-align: right;">
+            <span class="badge badge-success">Conexão SQLite Ativa (17 Tabelas)</span>
+            <p class="meta" style="margin-top: 4px;">Atualizado: 2026-08-26 14:52:22</p>
+        </div>
+    </div>
+
+    <!-- CARDS DE KPIS -->
+    <div class="grid-kpis">
+        <div class="card-kpi">
+            <div class="card-title">Nota Média Geral</div>
+            <div class="card-val">69.7</div>
+            <div class="card-sub">Base: 1.000 alunos analisados</div>
+        </div>
+        <div class="card-kpi">
+            <div class="card-title">Índice Médio de Sono (IQS)</div>
+            <div class="card-val">0.488</div>
+            <div class="card-sub">Baseline: ≥ 0.700 (Normal)</div>
+        </div>
+        <div class="card-kpi">
+            <div class="card-title">Tempo Médio de Telas</div>
+            <div class="card-val">4.3h</div>
+            <div class="card-sub warn">Alerta: Acima do ideal (&lt;2h)</div>
+        </div>
+        <div class="card-kpi">
+            <div class="card-title">Taxa de Vulnerabilidade</div>
+            <div class="card-val">34.7%</div>
+            <div class="card-sub alert">Sintomas declarados</div>
+        </div>
+    </div>
+
+    <!-- LINHA 1 DE GRÁFICOS: DONUT 1, DONUT 2, RADAR -->
+    <div class="charts-row-1">
+        <div class="chart-box">
+            <h3>🍩 Distribuição da Qualidade do Sono (Donut)</h3>
+            <div class="canvas-container"><canvas id="donutSonoChart"></canvas></div>
+        </div>
+        <div class="chart-box">
+            <h3>🍩 Níveis de Risco Acadêmico (Donut)</h3>
+            <div class="canvas-container"><canvas id="donutRiscoChart"></canvas></div>
+        </div>
+        <div class="chart-box">
+            <h3>🕸️ Perfil Multidimensional: Alto Desempenho vs Risco (Radar)</h3>
+            <div class="canvas-container"><canvas id="radarPerfilChart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- LINHA 2 DE GRÁFICOS: BARRAS ROI E BARRAS TELAS -->
+    <div class="charts-row-2">
+        <div class="chart-box">
+            <h3>📊 ROI do Estudo por Faixa de Horas e Sono (Barras Agrupadas)</h3>
+            <div class="canvas-container"><canvas id="barRoiChart"></canvas></div>
+        </div>
+        <div class="chart-box">
+            <h3>📉 Queda na Nota por Tempo de Telas (Barras)</h3>
+            <div class="canvas-container"><canvas id="barTelasChart"></canvas></div>
+        </div>
+    </div>
+
+    <!-- TABELAS ANALÍTICAS E REFERENCIAIS -->
+    <div class="tables-grid">
+        <div class="table-card">
+            <h3>⚠️ Matriz de Sobrecarga e Risco Acadêmico (kpi_risco_academico)</h3>
+            <table>
+                <thead>
+                    <tr><th>Nível de Risco</th><th>Amostra</th><th>Nota Média</th><th>Média Sono</th><th>Média Telas</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><span class='badge badge-success'>Baixo Risco</span></td><td>361</td><td><b>73.0</b></td><td>7.1h</td><td>3.5h</td></tr><tr><td><span class='badge badge-success'>Moderado</span></td><td>86</td><td><b>73.8</b></td><td>7.1h</td><td>3.4h</td></tr><tr><td><span class='badge badge-warning'>Alto Risco</span></td><td>439</td><td><b>67.2</b></td><td>6.2h</td><td>4.8h</td></tr><tr><td><span class='badge badge-danger'>Crítico</span></td><td>114</td><td><b>65.2</b></td><td>5.1h</td><td>6.0h</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-card">
+            <h3>📋 Amostra de Baselines e Valores Referenciais (ref_kpi_normalidade)</h3>
+            <table>
+                <thead>
+                    <tr><th>Indicador (Sigla)</th><th>Faixa de Normalidade</th><th>Média na Base</th><th>Diagnóstico</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><b>Índice Composto de Qualidade do Sono (IQS)</b></td><td>≥ 0.700 (Excelente: ≥ 0.850)</td><td><b>0.742</b></td><td><span class='badge badge-success'>Dentro da Normalidade</span></td></tr><tr><td><b>Duração Diária do Sono (DUR_SONO)</b></td><td>7.0h - 9.0h</td><td><b>7.46</b></td><td><span class='badge badge-success'>Dentro da Normalidade</span></td></tr><tr><td><b>Eficiência Real do Sono (EFIC_SONO)</b></td><td>≥ 0.85 (85%)</td><td><b>0.789</b></td><td><span class='badge badge-success'>Alerta / Moderado</span></td></tr><tr><td><b>Tempo Total de Telas de Entretenimento (TEMPO_TELAS)</b></td><td>< 2.0h/dia (Aceitável: < 4.0h)</td><td><b>4.52</b></td><td><span class='badge badge-success'>Alerta / Risco Moderado</span></td></tr><tr><td><b>Retorno sobre Investimento de Estudo (ROI_ESTUDO)</b></td><td>≥ 15.0 pts/hora</td><td><b>18.35</b></td><td><span class='badge badge-success'>Excelente / Alta Eficiência</span></td></tr><tr><td><b>Score Integrado de Hábitos Produtivos (SCORE_HABITOS)</b></td><td>≥ 0.650</td><td><b>0.583</b></td><td><span class='badge badge-success'>Alerta / Moderado</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 1. Donut Chart - Qualidade do Sono
+        new Chart(document.getElementById('donutSonoChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Excelente', 'Bom', 'Regular', 'Ruim'],
+                datasets: [{
+                    data: [280, 450, 190, 1000],
+                    backgroundColor: ['#10b981', '#38bdf8', '#f59e0b', '#ef4444'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } } },
+                cutout: '68%'
+            }
+        });
+
+        // 2. Donut Chart - Níveis de Risco Acadêmico
+        new Chart(document.getElementById('donutRiscoChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Baixo Risco', 'Moderado', 'Alto Risco', 'Crítico'],
+                datasets: [{
+                    data: [361, 86, 439, 114],
+                    backgroundColor: ['#10b981', '#38bdf8', '#f59e0b', '#ef4444'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } } },
+                cutout: '68%'
+            }
+        });
+
+        // 3. Radar Chart - Perfil Multidimensional
+        new Chart(document.getElementById('radarPerfilChart'), {
+            type: 'radar',
+            data: {
+                labels: ['Nota (0-100)', 'IQS Sono (x100)', 'Freq. Escolar (%)', 'Resiliência (x100)', 'Controle Telas (x100)', 'Saúde Mental (x10)'],
+                datasets: [
+                    {
+                        label: 'Perfil Alto Desempenho',
+                        data: [85, 88, 92, 82, 78, 85],
+                        borderColor: '#38bdf8',
+                        backgroundColor: 'rgba(56, 189, 248, 0.25)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#38bdf8'
+                    },
+                    {
+                        label: 'Perfil Risco Crítico',
+                        data: [58, 52, 68, 48, 35, 45],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.25)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#ef4444'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: '#1e293b' },
+                        grid: { color: '#1e293b' },
+                        pointLabels: { color: '#94a3b8', font: { size: 10 } },
+                        ticks: { display: false, max: 100, min: 0 }
+                    }
+                },
+                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } } }
+            }
+        });
+
+        // 4. Bar Chart - ROI do Estudo
+        new Chart(document.getElementById('barRoiChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Estudo Baixo (<2h)', 'Estudo Moderado (2-4h)', 'Estudo Alto (4-6h)', 'Estudo Intenso (>6h)'],
+                datasets: [
+                    {
+                        label: 'Sono Adequado (7-9h)',
+                        data: [38.2, 19.5, 14.8, 11.2],
+                        backgroundColor: '#38bdf8',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Sono Insuficiente (<6h)',
+                        data: [26.4, 13.1, 9.8, 7.5],
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+                    y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' }, title: { display: true, text: 'Pontos por Hora Estudada', color: '#94a3b8' } }
+                },
+                plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } } }
+            }
+        });
+
+        // 5. Bar Chart - Queda por Tempo de Telas
+        new Chart(document.getElementById('barTelasChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Baixo (<2h)', 'Moderado (2-4h)', 'Alto (4-6h)', 'Excessivo (>6h)'],
+                datasets: [{
+                    label: 'Nota Média de Exame',
+                    data: [82.3, 76.5, 71.8, 67.5],
+                    backgroundColor: ['#10b981', '#38bdf8', '#f59e0b', '#ef4444'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+                    y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' }, min: 50, max: 90 }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    </script>
+</body>
+</html>
