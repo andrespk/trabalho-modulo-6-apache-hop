@@ -77,7 +77,7 @@ expected_tables = {
     "dim_sono": 452, "dim_alunos": 1000, "dim_habitos": 1000, "dim_saude_mental": 101,
     "students_grade_performance_sleep": 1000, "students_grade_performance_habits": 1000, "students_grade_performance_mental_health": 101,
     "kpi_resumo": 16, "kpi_eficiencia_estudo": 12, "kpi_risco_academico": 4, "kpi_resiliencia_habitos": 4, "kpi_curso_saude_mental": 15,
-    "ref_kpi_normalidade": 10
+    "ref_kpi_normalidade": 10, "kpi_faixa_etaria_performance": 3
 }
 try:
     conn = sqlite3.connect(db_path)
@@ -89,10 +89,10 @@ try:
         if cnt != exp_count:
             table_errors.append(f"{tbl}: esperado {exp_count}, encontrado {cnt}")
     passed = (len(table_errors) == 0)
-    log_test("Teste 03: Validação de Integridade e Contagens nas 17 Tabelas", passed, "Todas as 17 tabelas validadas com contagens exatas." if passed else f"Erros: {table_errors}")
+    log_test("Teste 03: Validação de Integridade e Contagens nas 18 Tabelas", passed, "Todas as 18 tabelas validadas com contagens exatas." if passed else f"Erros: {table_errors}")
     conn.close()
 except Exception as e:
-    log_test("Teste 03: Validação de Integridade e Contagens nas 17 Tabelas", False, str(e))
+    log_test("Teste 03: Validação de Integridade e Contagens nas 18 Tabelas", False, str(e))
 
 # TESTE 4: Idempotência
 try:
@@ -157,7 +157,7 @@ try:
         page.locator(".grid-kpis").screenshot(path=kpi_cards_screenshot)
         page.locator(".charts-row-1").screenshot(path=charts_screenshot)
         browser.close()
-    ui_passed = (cards_count == 4 and charts_count == 5 and tables_count == 2)
+    ui_passed = (cards_count == 4 and charts_count == 5 and tables_count == 3)
     log_test("Teste 06: Renderização de Dashboard com Donuts, Radares e Barras (Playwright)", ui_passed, f"Dashboard validado ({cards_count} cards, {charts_count} gráficos interativos Chart.js, {tables_count} tabelas). Screenshot: {screenshot_path}", screenshot=screenshot_path)
 except Exception as e:
     log_test("Teste 06: Renderização de Dashboard com Donuts, Radares e Barras (Playwright)", False, str(e))

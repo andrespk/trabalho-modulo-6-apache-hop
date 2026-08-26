@@ -190,4 +190,20 @@ CREATE TABLE ref_kpi_normalidade (
     dt_carga TEXT NOT NULL
 );
 
+
+DROP TABLE IF EXISTS kpi_faixa_etaria_performance;
+CREATE TABLE kpi_faixa_etaria_performance (
+    id_kpi INTEGER PRIMARY KEY AUTOINCREMENT,
+    faixa_etaria TEXT NOT NULL,
+    etapa_academica TEXT NOT NULL,
+    total_estudantes INTEGER NOT NULL,
+    nota_media_exame REAL NOT NULL,
+    media_horas_estudo REAL NOT NULL,
+    media_tempo_telas REAL NOT NULL,
+    media_horas_sono REAL NOT NULL,
+    score_autorregulacao REAL NOT NULL,
+    taxa_risco_pct REAL NOT NULL,
+    dt_carga TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_kpi_dominio ON kpi_resumo(dominio);

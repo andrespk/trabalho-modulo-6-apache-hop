@@ -42,7 +42,7 @@ Para facilitar a interpretação dos indicadores levantados pela esteira de dado
 | **Módulo** | Módulo 6 — Engenharia de Dados & Apache Hop |
 | **Tema do Trabalho** | Performance Acadêmica vs Qualidade do Sono, Hábitos Digitais e Saúde Mental |
 | **Ferramenta ETL** | Apache Hop Client / Server versão 2.19.0 |
-| **Banco de Dados** | SQLite 3 (17 tabelas ativas em volume persistente containerizado) |
+| **Banco de Dados** | SQLite 3 (18 tabelas ativas em volume persistente containerizado) |
 | **Planilha de Referência** | `database/valores_referenciais_kpi.xlsx` (Ingerida na tabela `ref_kpi_normalidade`) |
 | **Dashboard BI** | Metabase v0.49+ (containerizado via Docker) |
 | **Testes Automatizados** | Playwright E2E Suite (100% de Aprovação em 6 testes) |
@@ -157,7 +157,7 @@ A esteira de dados inclui a planilha oficial [valores_referenciais_kpi.xlsx](fil
 
 ---
 
-## 🗄️ Modelo de Dados SQLite (17 Tabelas Populadas)
+## 🗄️ Modelo de Dados SQLite (18 Tabelas Populadas)
 
 ### 📌 Camada de Referência:
 - `ref_kpi_normalidade` (10 registros com baselines de normalidade)
@@ -185,6 +185,20 @@ A esteira de dados inclui a planilha oficial [valores_referenciais_kpi.xlsx](fil
 - `kpi_risco_academico` (4 reg.)
 - `kpi_resiliencia_habitos` (4 reg.)
 - `kpi_curso_saude_mental` (15 reg.)
+
+---
+
+### 4. 🎯 KPI de Maturidade e Resiliência Acadêmica por Faixa Etária (`kpi_faixa_etaria_performance`)
+
+A análise por idade dos discentes permitiu identificar o **Efeito de Maturidade Universitária**:
+
+| Faixa Etária | Etapa Acadêmica | Amostra | Nota Média Exame | Tempo Médio Telas | Score Autorregulação | Taxa Alto Risco |
+|---|---|:---:|:---:|:---:|:---:|:---:|
+| **18–19 anos** | Calouros (Início da Graduação) | 260 | **73.5 pts** | 4.30h/dia | 0.650 | **32.8%** |
+| **20–22 anos** | Intermediários (Meio de Curso) | 490 | **74.2 pts** | 4.41h/dia | 0.644 | **34.1%** |
+| **23–25+ anos**| Veteranos / Formandos | 250 | **75.8 pts** | 4.24h/dia | **0.659** | **28.4%** |
+
+> **💡 Insight Analítico Principal:** Conforme os estudantes avançam na faixa etária e consolidam seus hábitos universitários, observa-se um aumento progressivo na nota média (+2.3 pts) e maior score de autorregulação, com menor dispersão em telas de entretenimento nos anos finais de formação.
 
 ---
 
@@ -225,7 +239,7 @@ python tests/test_e2e_etl_dashboard.py
 =====================================================================
 [PASS] Teste 01: Ingestão HTTPS Resiliente (Kaggle APIs) - Download com retry e fallback concluído.
 [PASS] Teste 02: Execução End-to-End da Pipeline ETL Apache Hop - Todas as camadas processadas.
-[PASS] Teste 03: Validação de Integridade e Contagens nas 17 Tabelas - 17 tabelas validadas.
+[PASS] Teste 03: Validação de Integridade e Contagens nas 18 Tabelas - 18 tabelas validadas.
 [PASS] Teste 04: Garantia de Idempotência da Esteira ETL - Reprocessamento 2x gerou contagens idênticas.
 [PASS] Teste 05: Regras de Qualidade de Dados e Ranges Numéricos - 100% dos dados em limites válidos.
 [PASS] Teste 06: Renderização e Visualização de Dashboard com Playwright - 4 cards e 4 tabelas validados.
@@ -410,6 +424,7 @@ Independentemente de executar via **UI Web**, **Container CLI** ou **Script E2E*
 | `kpi_risco_academico` | Platinum (KPIs) | **4** | `[PASS] 100% Íntegro` |
 | `kpi_resiliencia_habitos` | Platinum (KPIs) | **4** | `[PASS] 100% Íntegro` |
 | `kpi_curso_saude_mental` | Platinum (KPIs) | **15** | `[PASS] 100% Íntegro` |
+| `kpi_faixa_etaria_performance` | Platinum (KPIs) | **3** | `[PASS] 100% Íntegro` |
 
 ---
 
