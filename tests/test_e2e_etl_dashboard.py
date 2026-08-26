@@ -67,16 +67,17 @@ try:
     script_etl = os.path.join(r"C:\Users\andrespk\.gemini\antigravity-ide\brain\7f404244-fcef-4944-aff6-59f6b75bef18\scratch", "run_advanced_etl.py")
     res = subprocess.run(["python", script_etl], capture_output=True, text=True, timeout=60)
     passed = (res.returncode == 0) and ("ESTEIRA ETL EXECUTADA COM SUCESSO" in res.stdout)
-    log_test("Teste 02: Execução End-to-End da Pipeline ETL Apache Hop", passed, "Todas as camadas (Bronze, Silver, Gold, Platinum) processadas." if passed else res.stderr)
+    log_test("Teste 02: Execução End-to-End da Pipeline ETL Apache Hop", passed, "Todas as camadas (Bronze, Silver, Gold, Platinum, Reference) processadas." if passed else res.stderr)
 except Exception as e:
     log_test("Teste 02: Execução End-to-End da Pipeline ETL Apache Hop", False, str(e))
 
-# TESTE 3: Validação das 16 Tabelas
+# TESTE 3: Validação das 17 Tabelas
 expected_tables = {
     "raw_sleep_efficiency": 452, "raw_student_performance": 1000, "raw_student_habits": 1000, "raw_student_mental_health": 101,
     "dim_sono": 452, "dim_alunos": 1000, "dim_habitos": 1000, "dim_saude_mental": 101,
     "students_grade_performance_sleep": 1000, "students_grade_performance_habits": 1000, "students_grade_performance_mental_health": 101,
-    "kpi_resumo": 16, "kpi_eficiencia_estudo": 12, "kpi_risco_academico": 4, "kpi_resiliencia_habitos": 4, "kpi_curso_saude_mental": 15
+    "kpi_resumo": 16, "kpi_eficiencia_estudo": 12, "kpi_risco_academico": 4, "kpi_resiliencia_habitos": 4, "kpi_curso_saude_mental": 15,
+    "ref_kpi_normalidade": 10
 }
 try:
     conn = sqlite3.connect(db_path)
@@ -88,10 +89,10 @@ try:
         if cnt != exp_count:
             table_errors.append(f"{tbl}: esperado {exp_count}, encontrado {cnt}")
     passed = (len(table_errors) == 0)
-    log_test("Teste 03: Validação de Integridade e Contagens nas 16 Tabelas", passed, "Todas as 16 tabelas validadas com contagens exatas." if passed else f"Erros: {table_errors}")
+    log_test("Teste 03: Validação de Integridade e Contagens nas 17 Tabelas", passed, "Todas as 17 tabelas (incluindo ref_kpi_normalidade) validadas com contagens exatas." if passed else f"Erros: {table_errors}")
     conn.close()
 except Exception as e:
-    log_test("Teste 03: Validação de Integridade e Contagens nas 16 Tabelas", False, str(e))
+    log_test("Teste 03: Validação de Integridade e Contagens nas 17 Tabelas", False, str(e))
 
 # TESTE 4: Idempotência
 try:
@@ -111,7 +112,7 @@ try:
 except Exception as e:
     log_test("Teste 04: Garantia de Idempotência da Esteira ETL (Reprocessamento)", False, str(e))
 
-# TESTE 5: Data Quality
+# TESTE 5: Data Quality & Valores Referenciais
 try:
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
@@ -123,9 +124,11 @@ try:
     inv_screens = cur.fetchone()[0]
     cur.execute("SELECT COUNT(*) FROM students_grade_performance_mental_health WHERE indice_vulnerabilidade_mental < 0 OR indice_vulnerabilidade_mental > 3")
     inv_mh = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(*) FROM ref_kpi_normalidade WHERE faixa_ideal_normalidade IS NULL")
+    inv_ref = cur.fetchone()[0]
     conn.close()
-    dq_passed = (inv_notes == 0 and inv_iqs == 0 and inv_screens == 0 and inv_mh == 0)
-    log_test("Teste 05: Regras de Qualidade de Dados e Ranges Numéricos", dq_passed, "100% dos dados respeitam os limites numéricos e integridade de domínio." if dq_passed else "Falha de qualidade de dados")
+    dq_passed = (inv_notes == 0 and inv_iqs == 0 and inv_screens == 0 and inv_mh == 0 and inv_ref == 0)
+    log_test("Teste 05: Regras de Qualidade de Dados e Ranges Numéricos", dq_passed, "100% dos dados e das 10 regras de normalidade respeitam os limites numéricos." if dq_passed else "Falha de qualidade de dados")
 except Exception as e:
     log_test("Teste 05: Regras de Qualidade de Dados e Ranges Numéricos", False, str(e))
 
@@ -148,10 +151,13 @@ try:
     roi_rows = cur.fetchall()
     cur.execute("SELECT perfil_atividade, nota_media, score_resiliencia FROM kpi_resiliencia_habitos ORDER BY score_resiliencia DESC")
     resil_rows = cur.fetchall()
+    cur.execute("SELECT kpi_nome, sigla, faixa_ideal_normalidade, valor_medio_encontrado_base, status_diagnostico_base FROM ref_kpi_normalidade LIMIT 5")
+    ref_rows = cur.fetchall()
     conn.close()
     risco_tr = "".join([f"<tr><td>{r[0]}</td><td>{r[1]}</td><td><b>{r[2]:.1f}</b></td><td>{r[3]:.1f}h</td><td>{r[4]:.1f}h</td></tr>" for r in risco_rows])
     roi_tr = "".join([f"<tr><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]:.1f}</td><td><b>{r[3]:.2f} pts/h</b></td></tr>" for r in roi_rows])
     resil_tr = "".join([f"<tr><td>{r[0]}</td><td><b>{r[1]:.1f}</b></td><td>{r[2]:.3f}</td></tr>" for r in resil_rows])
+    ref_tr = "".join([f"<tr><td><b>{r[0]} ({r[1]})</b></td><td>{r[2]}</td><td><b>{r[3]}</b></td><td><span style='color:#34d399;'>{r[4]}</span></td></tr>" for r in ref_rows])
     html_content = f"""<!DOCTYPE html>
 <html><head><meta charset="utf-8"><title>Dashboard</title>
 <style>body{{background:#0f172a;color:#f8fafc;font-family:sans-serif;padding:24px;}}.grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}}.card{{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;}}.card-title{{font-size:12px;color:#94a3b8;text-transform:uppercase;}}.card-val{{font-size:32px;font-weight:bold;color:#38bdf8;margin:8px 0;}}.card-sub{{font-size:12px;color:#10b981;}}.tables-grid{{display:grid;grid-template-columns:1fr 1fr;gap:20px;}}.table-card{{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:20px;}}table{{width:100%;border-collapse:collapse;}}th,td{{padding:8px;text-align:left;border-bottom:1px solid #334155;}}th{{color:#94a3b8;}}td{{color:#cbd5e1;}}</style></head>
@@ -167,11 +173,12 @@ try:
   <div class="table-card"><h3>⚡ ROI do Estudo (Nota por Hora)</h3><table><thead><tr><th>Faixa Estudo</th><th>Sono</th><th>Nota</th><th>ROI</th></tr></thead><tbody>{roi_tr}</tbody></table></div>
 </div>
 <div style="margin-top:20px;" class="table-card"><h3>🛡️ Fator de Resiliência (Exercício + Extracurricular)</h3><table><thead><tr><th>Perfil</th><th>Nota Média</th><th>Score Resiliência</th></tr></thead><tbody>{resil_tr}</tbody></table></div>
+<div style="margin-top:20px;" class="table-card"><h3>📋 Amostra de Baselines e Valores Referenciais de KPIs (ref_kpi_normalidade)</h3><table><thead><tr><th>KPI / Sigla</th><th>Faixa de Normalidade</th><th>Média na Base</th><th>Diagnóstico</th></tr></thead><tbody>{ref_tr}</tbody></table></div>
 </body></html>"""
     with open(dashboard_html_path, "w", encoding="utf-8") as f: f.write(html_content)
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page(viewport={"width": 1400, "height": 900})
+        page = browser.new_page(viewport={"width": 1400, "height": 1050})
         page.goto(f"file:///{dashboard_html_path.replace(os.sep, '/')}")
         page.wait_for_selector(".grid")
         cards_count = page.locator(".card").count()
@@ -179,8 +186,8 @@ try:
         page.screenshot(path=screenshot_path, full_page=True)
         page.locator(".grid").screenshot(path=kpi_cards_screenshot)
         browser.close()
-    ui_passed = (cards_count == 4 and tables_count == 3)
-    log_test("Teste 06: Renderização e Visualização de Dashboard com Playwright", ui_passed, f"Dashboard renderizado com sucesso ({cards_count} cards, {tables_count} tabelas). Screenshot: {screenshot_path}", screenshot=screenshot_path)
+    ui_passed = (cards_count == 4 and tables_count == 4)
+    log_test("Teste 06: Renderização e Visualização de Dashboard com Playwright", ui_passed, f"Dashboard renderizado com sucesso ({cards_count} cards, {tables_count} tabelas com referências). Screenshot: {screenshot_path}", screenshot=screenshot_path)
 except Exception as e:
     log_test("Teste 06: Renderização e Visualização de Dashboard com Playwright", False, str(e))
 

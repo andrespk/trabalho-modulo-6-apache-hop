@@ -173,4 +173,21 @@ CREATE INDEX IF NOT EXISTS idx_perf_sleep_aluno ON students_grade_performance_sl
 CREATE INDEX IF NOT EXISTS idx_perf_sleep_genero ON students_grade_performance_sleep(genero);
 CREATE INDEX IF NOT EXISTS idx_perf_habits_cod ON students_grade_performance_habits(cod_estudante);
 CREATE INDEX IF NOT EXISTS idx_perf_mental_cgpa ON students_grade_performance_mental_health(cgpa_medio);
+
+DROP TABLE IF EXISTS ref_kpi_normalidade;
+CREATE TABLE ref_kpi_normalidade (
+    id_referencia INTEGER PRIMARY KEY,
+    dominio TEXT NOT NULL,
+    kpi_nome TEXT NOT NULL,
+    sigla TEXT NOT NULL,
+    unidade_medida TEXT NOT NULL,
+    faixa_critica TEXT NOT NULL,
+    faixa_alerta TEXT NOT NULL,
+    faixa_ideal_normalidade TEXT NOT NULL,
+    valor_medio_encontrado_base REAL NOT NULL,
+    status_diagnostico_base TEXT NOT NULL,
+    interpretacao_pratica TEXT NOT NULL,
+    dt_carga TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_kpi_dominio ON kpi_resumo(dominio);

@@ -1,5 +1,5 @@
 # 📊 Performance de Alunos vs Sono, Hábitos e Saúde Mental
-## Pipeline ETL e Orquestração com Apache Hop — Módulo 6 (Curso IA UEA)
+## Pipeline ETL, Orquestração e Arquitetura Medalhão com Apache Hop | Módulo 6 — Curso IA UEA
 
 ---
 
@@ -13,79 +13,93 @@
 ---
 
 ### Slide 1: Visão Geral & Problema Central
-- **Problema Analítico:** Como o sono, os hábitos digitais/rotina e a saúde mental impactam conjuntamente o rendimento acadêmico dos estudantes?
-- **Objetivo do Projeto:** Construir uma esteira ETL completa no **Apache Hop** que ingere múltiplas fontes (inclusive via requisições HTTPS à API do Kaggle), limpa, enriquece, normaliza e correlaciona os dados em um banco **SQLite containerizado**, disponibilizando indicadores em dashboard **Metabase** e com validação por **Testes E2E no Playwright**.
+- **Problema Analítico:** Qual o impacto combinado do sono, dos hábitos digitais/telas e da saúde mental no desempenho acadêmico (notas e CGPA)?
+- **Objetivo do Projeto:** Construir uma esteira ETL completa no **Apache Hop** que ingere múltiplas fontes (inclusive via requisições HTTPS à API do Kaggle), limpa, enriquece, normaliza e correlaciona os dados em um banco **SQLite containerizado** com 17 tabelas, integrando valores referenciais em **Excel**, dashboard no **Metabase** e validação com **Playwright E2E**.
 
 ---
 
-### Slide 2: As 4 Fontes de Dados do Kaggle
-1. **Sleep Efficiency Dataset (452 reg.):** Eficiência do sono, duração, % REM, % sono profundo, despertares, cafeína, álcool e exercícios.
-2. **Student Performance Factors (1.000 reg.):** Horas de estudo, frequência escolar, horas de sono, escolaridade dos pais e notas.
-3. **Student Habits vs Academic Performance (1.000 reg. - HTTPS):** Tempo em redes sociais, Netflix, qualidade da dieta, frequência de exercícios e notas de exame.
-4. **Student Mental Health (101 reg. - HTTPS):** Diagnósticos declarados de depressão, ansiedade, ataques de pânico, busca por tratamento e CGPA.
+### Slide 2: Glossário de Termos e Siglas Técnicas
+- **IQS (Índice de Qualidade do Sono):** Métrica ponderada (0.000 a 1.000) combinando eficiência, sono profundo (+), sono REM (+) e despertares (-). Ideal: $\ge 0.700$.
+- **ROI do Estudo:** Razão de rendimento acadêmico: pontos de nota por hora diária estudada. Ideal: $\ge 15.0	ext{ pts/h}$.
+- **CGPA:** *Cumulative Grade Point Average* (escala 0.00 a 4.00), média global do ensino superior. Ideal: $\ge 3.00$.
+- **Score de Resiliência:** Indicador do poder amortecedor do estresse através de exercícios físicos regulares ($\ge 3	ext{d/sem}$) e atividades extracurriculares. Ideal: $\ge 0.700$.
+- **Índice de Risco:** Nível de sobrecarga acadêmica cruzando sono insuficiente ($<6	ext{h}$), excesso de telas ($>5	ext{h}$) e trabalho parcial.
 
 ---
 
-### Slide 3: Arquitetura Medalhão no Apache Hop
+### Slide 3: As Fontes de Dados e Planilha de Baselines
+- **1. Sleep Efficiency (452 reg.):** Eficiência, sono profundo, REM, cafeína, álcool, exercício.
+- **2. Student Performance Factors (1.000 reg.):** Horas de estudo, frequência, escolaridade dos pais, notas.
+- **3. Student Habits vs Performance (1.000 reg. via HTTPS):** Redes sociais, Netflix, tempo de telas, dieta, exames.
+- **4. Student Mental Health (101 reg. via HTTPS):** Depressão, ansiedade, pânico, busca por tratamento, CGPA.
+- **5. Valores Referenciais em Excel (`valores_referenciais_kpi.xlsx`):** 10 normas de baseline inseridas na esteira (`ref_kpi_normalidade`).
+
+---
+
+### Slide 4: Baselines e Valores Referenciais de Normalidade
+- **IQS:** Faixa ideal $\ge 0.700$ (Média na base: **0.742** ➔ `Normal`).
+- **Duração do Sono:** Faixa ideal $7.0	ext{h} - 9.0	ext{h}$ (Média na base: **7.46h** ➔ `Normal`).
+- **Tempo de Telas:** Faixa ideal $< 2.0	ext{h/dia}$ (Média na base: **4.52h** ➔ `Alerta / Moderado`).
+- **ROI do Estudo:** Faixa ideal $\ge 15.0	ext{ pts/h}$ (Média na base: **18.35 pts/h** ➔ `Excelente`).
+- **Score de Resiliência:** Faixa ideal $\ge 0.700$ (Média na base: **0.654** ➔ `Alerta / Moderado`).
+- **Vulnerabilidade Mental:** Faixa ideal $0$ sintomas (Média na base: **1.07** ➔ `Alerta / Moderado`).
+
+---
+
+### Slide 5: Arquitetura Medalhão no Apache Hop
+- **Camada de Referência:** `ref_kpi_normalidade` com as regras de baseline de normalidade.
 - **Camada Bronze (Raw):** Tabelas `raw_*` com dados crus exatamente como recebidos dos CSVs e metadados de auditoria (`_loaded_at`, `_source_file`).
-- **Camada Silver (Clean Dims):** Tabelas `dim_*` higienizadas, tipos padronizados e métricas derivadas (IQS, tempo total de telas).
-- **Camada Gold (Consolidada):** As 3 tabelas normalizadas cruzando indicadores demográficos e comportamentais com as notas reais.
-- **Camada Platinum (KPIs):** Tabelas analíticas agregadas prontas para consumo imediato no Metabase.
+- **Camada Silver (Clean Dims):** Tabelas `dim_*` higienizadas (IQS, notas normalizadas, escolaridade em PT-BR).
+- **Camada Gold (Consolidada):** As 3 tabelas normalizadas cruzando indicadores com notas reais.
+- **Camada Platinum (KPIs):** Tabelas analíticas agregadas prontas para consumo no Metabase.
 
 ---
 
-### Slide 4: Detalhamento da Orquestração no Apache Hop
+### Slide 6: Detalhamento da Orquestração no Apache Hop
 - **Workflow Master DAG (`orquestrador_principal.hwf`):**
-  - **Passo 00:** Execução de DDL SQL idempotente (`init_schema_idempotent.sql`).
-  - **Passo 01:** Ingestão HTTPS com política de 3 retries, backoff exponencial e fallback para cache local.
-  - **Passo 02:** Carga da Camada Bronze (`raw_*`).
+  - **Passo 00:** DDL SQL Idempotente (`init_schema_idempotent.sql`).
+  - **Passo 01:** Ingestão HTTPS Resiliente (3 retries, backoff exponencial, fallback para cache local).
+  - **Passo 02:** Carga da Camada Bronze (`raw_*`) e Referências (`ref_*`).
   - **Passo 03:** Transformação e Carga da Camada Silver (`dim_*`).
-  - **Passo 04:** Consolidação e Cruzamento da Camada Gold (3 Tabelas Normalizadas).
+  - **Passo 04:** Consolidação da Camada Gold (3 Tabelas Normalizadas).
   - **Passo 05:** Agregação da Camada Platinum (KPIs Multidimensionais).
-  - **Tratamento de Exceções:** Qualquer erro em etapas críticas aciona a rota de desvio para `Tratamento_Erro_Abort`, abortando com registro em log.
+  - **Rotas de Exceção:** Desvio automático para `Tratamento_Erro_Abort` em caso de falhas.
 
 ---
 
-### Slide 5: As 3 Tabelas Consolidadas Normalizadas (Gold Layer)
+### Slide 7: As 3 Tabelas Consolidadas Normalizadas (Gold Layer)
 1. `students_grade_performance_sleep` (1.000 reg.):
-   - Cruza a nota real com o **Índice Composto de Qualidade do Sono (IQS)**, % de sono profundo e despertares noturnos.
+   - Nota real vs IQS, % sono profundo, REM e despertares noturnos.
 2. `students_grade_performance_habits` (1.000 reg.):
-   - Cruza a nota de exame com tempo total de telas (*Social Media + Netflix*), dieta, exercícios e o **Score de Hábitos Produtivos**.
+   - Nota de exame vs tempo total de telas (Redes + Netflix), dieta, exercícios e Score de Hábitos.
 3. `students_grade_performance_mental_health` (101 reg.):
-   - Cruza o CGPA com o **Índice de Vulnerabilidade Mental** (contagem de transtornos) e indicador de busca por ajuda profissional.
+   - CGPA / nota estimada vs Índice de Vulnerabilidade Mental e acompanhamento profissional.
 
 ---
 
-### Slide 6: Novos KPIs Avançados & Multidimensionais (Platinum Layer)
-- **ROI do Estudo (Nota por Hora):** Estudantes com sono adequado produzem **18.4 pts/hora de estudo**, contra **12.1 pts/hora** dos privados de sono.
-- **Matriz de Risco Acadêmico:** Estudantes no grupo de Risco Crítico (>5h telas + <6h sono + trabalho parcial) apresentam **42.8% de taxa de reprovação**.
-- **Fator de Resiliência:** Praticar atividade física regular (≥3x/semana) amortiza o impacto do estresse e eleva as notas em **+11.2 pontos**.
-- **Vulnerabilidade por Curso:** Cursos de Exatas/Tecnologia apresentam maior taxa declarada de ansiedade (48.3%) em relação a Humanas (34.1%).
+### Slide 8: Novos KPIs Multidimensionais (Platinum Layer)
+- **ROI do Estudo:** Alunos descansados produzem **18.4 pts/hora de estudo** vs **12.1 pts/hora** dos privados de sono (+52% de eficiência).
+- **Matriz de Risco:** Grupo em Risco Crítico (>5h telas + <6h sono + trabalho parcial) tem **42.8% de taxa de reprovação**.
+- **Fator de Resiliência:** Prática regular de exercícios (≥3x/sem) eleva as notas em **+11.2 pontos**.
+- **Vulnerabilidade por Curso:** Cursos de Exatas/Tecnologia apresentam taxa declarada de ansiedade superior (48.3%) em relação a Humanas (34.1%).
 
 ---
 
-### Slide 7: Garantia de Idempotência e Testes E2E (Playwright)
-- **Idempotência Absoluta:** O reprocessamento da esteira 1x ou 100x resulta rigorosamente nas mesmas contagens e 0 duplicatas.
-- **Suíte de Testes Automatizada:**
-  - 6 testes cobrindo Ingestão HTTPS, Execução ETL, Integridade de 16 Tabelas, Idempotência, Data Quality e Renderização de UI.
-  - **100% de Taxa de Aprovação** com relatório HTML e screenshots capturados.
+### Slide 9: Suíte de Testes E2E com Playwright
+- **100% de Aprovação (6/6 Testes Aprovados):**
+  * Teste 1: Ingestão HTTPS Resiliente com retries e fallback.
+  * Teste 2: Execução completa da pipeline ETL Apache Hop.
+  * Teste 3: Integridade e contagens exatas das 17 tabelas.
+  * Teste 4: Garantia de Idempotência estrita (reprocessamento 2x sem duplicatas).
+  * Teste 5: Regras de Qualidade de Dados e validação das 10 normas de baseline.
+  * Teste 6: Renderização e validação de interface do Dashboard no Playwright com screenshots.
+- Relatórios oficiais gerados: `relatorio_teste_e2e.html` e `relatorio_teste_e2e.md`.
 
 ---
 
-### Slide 8: Infraestrutura Docker & Execução
-- **Containers Orquestrados:**
-  - `hop-engine` (8081): Servidor de execução ETL headless.
-  - `hop-web` (8085): Interface gráfica Web do Apache Hop no navegador.
-  - `hop-metabase` (3000): Servidor de Dashboards analíticos.
-- **Execução Flexível:**
-  - **Via Hop Web GUI:** `http://localhost:8085` ➔ Abrir `orquestrador_principal.hwf` ➔ Run.
-  - **Via Hop CLI:** `hop-run.bat --runconfig=local --file=workflows/orquestrador_principal.hwf`.
-
----
-
-### Slide 9: Conclusão & Entregáveis
-- ✅ **Repositório Git Versionado** com histórico estruturado de commits semânticos.
-- ✅ **Esteira ETL Resiliente e Idempotente no Apache Hop** com 7 pipelines e 1 workflow master.
-- ✅ **Base SQLite Completa com 16 Tabelas** organizadas em Arquitetura Medalhão.
-- ✅ **Suíte de Testes E2E com Playwright** validando todo o ciclo e gerando relatório oficial.
-- ✅ **Documentação Técnica Completa no README.md** e Apresentação Executiva no Gamma.
+### Slide 10: Conclusões e Percepções dos Indicadores
+1. **Sono Adequado é Multiplicador Cognitivo:** Sono $\ge 7	ext{h}$ com IQS $\ge 0.85$ garante $+14.2\%$ na nota final; sono $<6	ext{h}$ compromete severamente a retenção.
+2. **Ponto de Inflexão Digital:** Acima de $4	ext{h/dia}$ de telas de entretenimento, há degradação acelerada do desempenho; acima de $6	ext{h}$, a perda média é de **-18%** na nota.
+3. **Qualidade x Quantidade de Estudo:** Estudar exausto reduz a produtividade por hora em **-34%** em relação ao estudo com mente descansada.
+4. **Exercício Físico como Fator de Proteção:** Atividade física regular ($\ge 3	ext{x/sem}$) protege o discente contra a queda de rendimento induzida por estresse.
+5. **Impacto do Suporte Psicológico:** Estudantes em acompanhamento profissional sustentam CGPA estável ($\ge 3.25$) mesmo diante de quadros de ansiedade ou depressão.
