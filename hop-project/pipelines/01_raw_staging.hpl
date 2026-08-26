@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+  <info>
+    <name>01_raw_staging</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description>Carga de dados brutos dos CSVs na Camada Bronze (Raw Tables)</description>
+    <pipeline_type>Normal</pipeline_type>
+  </info>
+  <order>
+    <hop><from>Ler Sleep_Efficiency.csv</from><to>Gravar raw_sleep_efficiency</to><enabled>Y</enabled></hop>
+    <hop><from>Ler student_performance.csv</from><to>Gravar raw_student_performance</to><enabled>Y</enabled></hop>
+    <hop><from>Ler student_habits.csv</from><to>Gravar raw_student_habits</to><enabled>Y</enabled></hop>
+    <hop><from>Ler student_mental_health.csv</from><to>Gravar raw_student_mental_health</to><enabled>Y</enabled></hop>
+  </order>
+  <transform>
+    <name>Ler Sleep_Efficiency.csv</name><type>CSVFileInput</type>
+    <filename>${PROJECT_HOME}/../database/Sleep_Efficiency.csv</filename>
+    <separator>,</separator><enclosure>"</enclosure><header>Y</header>
+  </transform>
+  <transform>
+    <name>Gravar raw_sleep_efficiency</name><type>TableOutput</type>
+    <connection>sqlite_estudantes</connection>
+    <table>raw_sleep_efficiency</table><truncate>Y</truncate>
+  </transform>
+  <transform>
+    <name>Ler student_performance.csv</name><type>CSVFileInput</type>
+    <filename>${PROJECT_HOME}/../database/student_performance_dataset-selected-columns.csv</filename>
+    <separator>,</separator><enclosure>"</enclosure><header>Y</header>
+  </transform>
+  <transform>
+    <name>Gravar raw_student_performance</name><type>TableOutput</type>
+    <connection>sqlite_estudantes</connection>
+    <table>raw_student_performance</table><truncate>Y</truncate>
+  </transform>
+  <transform>
+    <name>Ler student_habits.csv</name><type>CSVFileInput</type>
+    <filename>${PROJECT_HOME}/../database/student_habits_performance.csv</filename>
+    <separator>,</separator><enclosure>"</enclosure><header>Y</header>
+  </transform>
+  <transform>
+    <name>Gravar raw_student_habits</name><type>TableOutput</type>
+    <connection>sqlite_estudantes</connection>
+    <table>raw_student_habits</table><truncate>Y</truncate>
+  </transform>
+  <transform>
+    <name>Ler student_mental_health.csv</name><type>CSVFileInput</type>
+    <filename>${PROJECT_HOME}/../database/Student Mental health.csv</filename>
+    <separator>,</separator><enclosure>"</enclosure><header>Y</header>
+  </transform>
+  <transform>
+    <name>Gravar raw_student_mental_health</name><type>TableOutput</type>
+    <connection>sqlite_estudantes</connection>
+    <table>raw_student_mental_health</table><truncate>Y</truncate>
+  </transform>
+</pipeline>
