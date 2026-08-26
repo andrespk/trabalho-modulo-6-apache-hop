@@ -89,10 +89,10 @@ try:
         if cnt != exp_count:
             table_errors.append(f"{tbl}: esperado {exp_count}, encontrado {cnt}")
     passed = (len(table_errors) == 0)
-    log_test("Teste 03: Validação de Integridade e Contagens nas 19 Tabelas", passed, "Todas as 19 tabelas validadas com contagens exatas." if passed else f"Erros: {table_errors}")
+    log_test("Teste 03: Validação de Integridade e Contagens nas 20 Tabelas", passed, "Todas as 20 tabelas validadas com contagens exatas." if passed else f"Erros: {table_errors}")
     conn.close()
 except Exception as e:
-    log_test("Teste 03: Validação de Integridade e Contagens nas 19 Tabelas", False, str(e))
+    log_test("Teste 03: Validação de Integridade e Contagens nas 20 Tabelas", False, str(e))
 
 # TESTE 4: Idempotência
 try:
