@@ -1,3 +1,8 @@
+
+# 📊 Performance de Alunos vs Sono, Hábitos e Saúde Mental
+### Trabalho Final — Módulo 6: Engenharia de Dados com Apache Hop (Versão 2.5)
+
+> **Esteira de Dados Resiliente | Ingestão HTTPS Dinâmica | Arquitetura Medalhão (Bronze/Silver/Gold/Platinum) | Valores Referenciais de KPIs em Excel | SQLite Containerizado | Dashboard Metabase | Testes E2E Playwright**
 ### 🌐 Links Rápidos de Acesso aos Serviços (Web UI & Dashboards)
 
 | Serviço / Aplicação | Link Direto de Acesso | Porta | Credenciais / Observações |
@@ -9,12 +14,11 @@
 | 📑 **Documentação Técnica em PDF** | [Download do PDF Completo](docs/Trabalho_Final_Modulo_6_Apache_Hop_UEA.pdf) | — | Relatório executivo completo em PDF com diagramas e tabelas |
 | 📑 **Apresentação Gamma** | [Link da Apresentação no Gamma](https://gamma.app/docs/Performance-de-Alunos-vs-Sono-Habitos-e-Saude-Mental-4338ehdv1j7sl1b?mode=doc) | — | Slides executivos do projeto |
 
----
+**E-mail / Usuário** : `admin@uea.edu.br` 
+<br/>
+**Senha de Acesso** : `HopAdmin2024!`
 
-# 📊 Performance de Alunos vs Sono, Hábitos e Saúde Mental
-### Trabalho Final — Módulo 6: Engenharia de Dados com Apache Hop (Versão 2.5)
 
-> **Esteira de Dados Resiliente | Ingestão HTTPS Dinâmica | Arquitetura Medalhão (Bronze/Silver/Gold/Platinum) | Valores Referenciais de KPIs em Excel | SQLite Containerizado | Dashboard Metabase | Testes E2E Playwright**
 
 ---
 
@@ -534,12 +538,4 @@ Independentemente de executar via **UI Web**, **Container CLI** ou **Script E2E*
 
 ### Credenciais do Usuário Padrão no Metabase
 
-Para acessar o painel administrativo e os dashboards configurados no Metabase, utilize as credenciais padrão criadas na inicialização:
 
-| Parâmetro | Valor Padrão Configurado |
-|---|---|
-| **URL de Acesso** | [http://localhost:3001/dashboard/2](http://localhost:3001/dashboard/2) |
-| **E-mail / Usuário** | `admin@uea.edu.br` |
-| **Senha de Acesso** | `HopAdmin2024!` |
-| **Perfil / Papel** | Administrador da Instância (Acesso Total a Dashboards e Coleções) |
-| **Banco de Dados Conectado** | SQLite (`/data/estudantes.db` com as 20 tabelas medalhão) |
