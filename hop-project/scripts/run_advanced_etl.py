@@ -491,6 +491,38 @@ for g in ["Feminino", "Masculino"]:
 
 pd.DataFrame(kpi_gender).to_sql("kpi_genero_performance", conn, if_exists="append", index=False)
 
+# 7. KPI de Performance por Hábitos de Vida e Exposição a Telas
+kpi_habitos = []
+for cat in ["Baixo (<2h)", "Moderado (2-4h)", "Alto (4-6h)", "Muito Alto (>6h)"]:
+    sub = tabela_habits[tabela_habits["categoria_tempo_telas"] == cat]
+    if len(sub) > 0:
+        perfil = {
+            "Baixo (<2h)": "Hábitos de Alta Performance (Foco Digital & Exercício)",
+            "Moderado (2-4h)": "Hábitos Equilibrados (Uso Moderado de Telas)",
+            "Alto (4-6h)": "Hábitos em Alerta (Sobrecarga de Telas)",
+            "Muito Alto (>6h)": "Hábitos Críticos (Sedentarismo & Dispersão Digital)"
+        }.get(cat, "Hábitos Diversos")
+        
+        sqd_medio = round((sub["horas_estudo_dia"] / (sub["tempo_telas_horas"] + 0.1)).mean(), 3)
+        aprov_exc = round((sub["nota_exame"] >= 70.0).mean() * 100, 1)
+        
+        kpi_habitos.append({
+            "categoria_habito": cat,
+            "perfil_estilo_vida": perfil,
+            "total_estudantes": len(sub),
+            "nota_media_exame": round(sub["nota_exame"].mean(), 2),
+            "media_horas_estudo": round(sub["horas_estudo_dia"].mean(), 2),
+            "media_tempo_telas": round(sub["tempo_telas_horas"].mean(), 2),
+            "media_exercicio_dias": round(sub["freq_exercicio_semana"].mean(), 1),
+            "score_saude_mental": round(sub["autoavaliacao_saude_mental"].mean(), 1),
+            "indice_qualidade_digital": sqd_medio,
+            "taxa_aprovacao_excelencia_pct": aprov_exc,
+            "dt_carga": now_str
+        })
+
+pd.DataFrame(kpi_habitos).to_sql("kpi_habitos_vida_performance", conn, if_exists="append", index=False)
+
+
 conn.commit()
 conn.close()
 

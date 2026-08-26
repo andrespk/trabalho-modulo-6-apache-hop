@@ -54,7 +54,7 @@ Para facilitar a interpretação dos indicadores levantados pela esteira de dado
 | **Módulo** | Módulo 6 — Engenharia de Dados & Apache Hop |
 | **Tema do Trabalho** | Performance Acadêmica vs Qualidade do Sono, Hábitos Digitais e Saúde Mental |
 | **Ferramenta ETL** | Apache Hop Client / Server versão 2.19.0 |
-| **Banco de Dados** | SQLite 3 (19 tabelas ativas em volume persistente containerizado) |
+| **Banco de Dados** | SQLite 3 (20 tabelas ativas em volume persistente containerizado) |
 | **Planilha de Referência** | `database/valores_referenciais_kpi.xlsx` (Ingerida na tabela `ref_kpi_normalidade`) |
 | **Dashboard BI** | Metabase v0.49+ (containerizado via Docker) |
 | **Testes Automatizados** | Playwright E2E Suite (100% de Aprovação em 6 testes) |
@@ -169,7 +169,7 @@ A esteira de dados inclui a planilha oficial [valores_referenciais_kpi.xlsx](fil
 
 ---
 
-## 🗄️ Modelo de Dados SQLite (19 Tabelas Populadas)
+## 🗄️ Modelo de Dados SQLite (20 Tabelas Populadas)
 
 ### 📌 Camada de Referência:
 - `ref_kpi_normalidade` (10 registros com baselines de normalidade)
@@ -243,6 +243,23 @@ O cruzamento multidimensional das bases permitiu traçar um panorama comparativo
 
 ---
 
+### 6. 📱 KPI de Performance por Hábitos de Vida e Exposição Digital (`kpi_habitos_vida_performance`)
+
+A esteira de dados agrega o impacto direto do estilo de vida diário (horas de telas de entretenimento, frequência semanal de exercícios físicos e índice de qualidade digital) no desempenho acadêmico e na saúde mental:
+
+| Faixa de Telas | Perfil de Estilo de Vida | Amostra | Nota Média Exame | Horas Estudo | Tempo Telas | Exercício/Sem | Saúde Mental (1-10) | SQD (Qualidade Digital) | Aprovação $\ge 70	ext{ pts}$ |
+|---|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Baixo (<2h)** | **Hábitos de Alta Performance (Foco & Esporte)** | 90 | **76.5 pts** | 3.41h/dia | **1.48h/dia** | **3.2 dias/sem** | **5.6 / 10** | **2.545** | **72.2%** |
+| **Moderado (2-4h)** | **Hábitos Equilibrados (Uso Moderado)** | 346 | **72.9 pts** | 3.63h/dia | 3.24h/dia | 3.1 dias/sem | 5.4 / 10 | 1.126 | **57.5%** |
+| **Alto (4-6h)** | **Hábitos em Alerta (Sobrecarga de Telas)** | 429 | **67.4 pts** | 3.53h/dia | 4.98h/dia | 3.0 dias/sem | 5.4 / 10 | 0.700 | **46.4%** |
+
+> **💡 Principais Percepções Analíticas dos Hábitos:**
+> 1. **Poder do Foco Digital (Score SQD):** Estudantes com tempo de telas controlado ($<2	ext{h/dia}$) apresentam Score de Qualidade Digital de **2.545** (mais que o dobro de tempo dedicado ao estudo do que a entretenimento passivo), atingindo **72.2% de taxa de excelência** ($\ge 70	ext{ pts}$).
+> 2. **O Abismo do Excesso de Telas ($>4	ext{h}$):** Na faixa de alto consumo de telas ($4-6	ext{h/dia}$), a nota média cai em **-9.1 pontos** (de 76.5 para 67.4) e a taxa de aprovação com excelência desaba em **-25.8 pontos percentuais** (de 72.2% para 46.4%).
+> 3. **Prática Esportiva Consistente:** A prática de exercícios físicos em $\ge 3	ext{ dias/semana}$ correlaciona-se com maior estabilidade na autoavaliação de saúde mental (5.6 vs 5.4).
+
+---
+
 ## 💡 Percepções e Conclusões dos Indicadores Levantados
 
 A análise aprofundada dos dados e dos KPIs consolidados permitiu identificar padrões e conclusões de alto valor para o domínio educacional:
@@ -280,7 +297,7 @@ python tests/test_e2e_etl_dashboard.py
 =====================================================================
 [PASS] Teste 01: Ingestão HTTPS Resiliente (Kaggle APIs) - Download com retry e fallback concluído.
 [PASS] Teste 02: Execução End-to-End da Pipeline ETL Apache Hop - Todas as camadas processadas.
-[PASS] Teste 03: Validação de Integridade e Contagens nas 19 Tabelas - 19 tabelas validadas.
+[PASS] Teste 03: Validação de Integridade e Contagens nas 20 Tabelas - 20 tabelas validadas.
 [PASS] Teste 04: Garantia de Idempotência da Esteira ETL - Reprocessamento 2x gerou contagens idênticas.
 [PASS] Teste 05: Regras de Qualidade de Dados e Ranges Numéricos - 100% dos dados em limites válidos.
 [PASS] Teste 06: Renderização e Visualização de Dashboard com Playwright - 4 cards e 4 tabelas validados.
@@ -524,4 +541,4 @@ Para acessar o painel administrativo e os dashboards configurados no Metabase, u
 | **E-mail / Usuário** | `admin@uea.edu.br` |
 | **Senha de Acesso** | `HopAdmin2024!` |
 | **Perfil / Papel** | Administrador da Instância (Acesso Total a Dashboards e Coleções) |
-| **Banco de Dados Conectado** | SQLite (`/data/estudantes.db` com as 19 tabelas medalhão) |
+| **Banco de Dados Conectado** | SQLite (`/data/estudantes.db` com as 20 tabelas medalhão) |

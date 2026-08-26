@@ -234,3 +234,21 @@ CREATE TABLE kpi_genero_performance (
 );
 
 CREATE INDEX IF NOT EXISTS idx_kpi_dominio ON kpi_resumo(dominio);
+
+
+-- 20. Tabela Platinum de KPI: Performance por Hábitos de Vida e Exposição a Telas
+CREATE TABLE IF NOT EXISTS kpi_habitos_vida_performance (
+    id_kpi INTEGER PRIMARY KEY AUTOINCREMENT,
+    categoria_habito TEXT NOT NULL,
+    perfil_estilo_vida TEXT NOT NULL,
+    total_estudantes INTEGER NOT NULL,
+    nota_media_exame REAL NOT NULL,
+    media_horas_estudo REAL NOT NULL,
+    media_tempo_telas REAL NOT NULL,
+    media_exercicio_dias REAL NOT NULL,
+    score_saude_mental REAL NOT NULL,
+    indice_qualidade_digital REAL NOT NULL,
+    taxa_aprovacao_excelencia_pct REAL NOT NULL,
+    dt_carga TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_kpi_habitos_cat ON kpi_habitos_vida_performance(categoria_habito);
