@@ -46,6 +46,7 @@ Para facilitar a interpretação dos indicadores levantados pela esteira de dado
 | **Planilha de Referência** | `database/valores_referenciais_kpi.xlsx` (Ingerida na tabela `ref_kpi_normalidade`) |
 | **Dashboard BI** | Metabase v0.49+ (containerizado via Docker) |
 | **Testes Automatizados** | Playwright E2E Suite (100% de Aprovação em 6 testes) |
+| **Repositório GitHub** | [https://github.com/andrespk/trabalho-modulo-6-apache-hop](https://github.com/andrespk/trabalho-modulo-6-apache-hop) |
 | **Apresentação Gamma** | [Link da Apresentação no Gamma](https://gamma.app/docs/Performance-de-Alunos-vs-Sono-Habitos-e-Saude-Mental-4338ehdv1j7sl1b?mode=doc) |
 | **Idioma** | Português Brasileiro (pt-BR) |
 

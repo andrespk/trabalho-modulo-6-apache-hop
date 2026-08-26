@@ -12,6 +12,8 @@
 
 ---
 
+- **Repositório GitHub (Público):** [https://github.com/andrespk/trabalho-modulo-6-apache-hop](https://github.com/andrespk/trabalho-modulo-6-apache-hop)
+
 ### Slide 1: Visão Geral & Problema Central
 - **Problema Analítico:** Qual o impacto combinado do sono, dos hábitos digitais/telas e da saúde mental no desempenho acadêmico (notas e CGPA)?
 - **Objetivo do Projeto:** Construir uma esteira ETL completa no **Apache Hop** que ingere múltiplas fontes (inclusive via requisições HTTPS à API do Kaggle), limpa, enriquece, normaliza e correlaciona os dados em um banco **SQLite containerizado** com 17 tabelas, integrando valores referenciais em **Excel**, dashboard no **Metabase** e validação com **Playwright E2E**.
