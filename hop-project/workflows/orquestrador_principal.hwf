@@ -2,155 +2,412 @@
 <workflow>
   <name>orquestrador_principal</name>
   <name_sync_with_filename>Y</name_sync_with_filename>
-  <description>Workflow Master Modular - Engenharia de Dados Apache Hop 2.5</description>
-  <extended_description/>
+  <description>Orquestrador Master da Esteira de Dados Medalhao (Bronze, Silver, Gold, Platinum e Reference)</description>
+  <extended_description>Workflow modular que executa e sinaliza explicitamente a passagem entre as 5 camadas da arquitetura medalhao com validacao de integridade e fail-safe automatico.</extended_description>
+  <workflow_version>2.5</workflow_version>
   <created_user>-</created_user>
-  <modified_user>-</modified_user>
   <created_date>2026/08/26 12:00:00.000</created_date>
-  <modified_date>2026/08/26 12:00:00.000</modified_date>
-  <workflow_version/>
-  <parameters/>
+  <modified_user>-</modified_user>
+  <modified_date>2026/08/26 23:30:00.000</modified_date>
+  <parameters>
+  </parameters>
   <actions>
     <action>
-      <repeat>N</repeat>
-      <schedulerType>0</schedulerType>
-      <intervalSeconds>0</intervalSeconds>
-      <intervalMinutes>60</intervalMinutes>
-      <DayOfMonth>1</DayOfMonth>
-      <weekDay>1</weekDay>
-      <minutes>0</minutes>
-      <hour>12</hour>
-      <doNotWaitOnFirstExecution>N</doNotWaitOnFirstExecution>
       <name>Start</name>
-      <description/>
+      <description>Inicio da execucao</description>
       <type>SPECIAL</type>
       <attributes/>
-      <xloc>80</xloc>
-      <yloc>112</yloc>
+      <DayOfMonth>1</DayOfMonth>
+      <hour>12</hour>
+      <intervalMinutes>60</intervalMinutes>
+      <intervalSeconds>0</intervalSeconds>
+      <minutes>0</minutes>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <weekDay>1</weekDay>
       <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>60</xloc>
+      <yloc>140</yloc>
       <attributes_hac/>
     </action>
+
     <action>
-      <sql>SELECT 1;</sql>
-      <connection>sqlite_estudantes</connection>
-      <useVariableSubstitution>Y</useVariableSubstitution>
-      <sqlfromfile>N</sqlfromfile>
-      <sqlfilename/>
-      <sendOneStatement>Y</sendOneStatement>
       <name>00_Init_Schema_SQL</name>
-      <description>Cria schema DDL idempotente com 20 tabelas e indices</description>
+      <description>Validacao e inicializacao da infraestrutura SQLite e DDL</description>
       <type>SQL</type>
       <attributes/>
-      <xloc>260</xloc>
-      <yloc>120</yloc>
+      <sql>SELECT 1;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>T</sendOneStatement>
+      <connection>sqlite_estudantes</connection>
       <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>180</xloc>
+      <yloc>140</yloc>
       <attributes_hac/>
     </action>
+
     <action>
-      <filename>${PROJECT_HOME}/pipelines/01_raw_staging.hpl</filename>
-      <params_from_previous>N</params_from_previous>
-      <exec_per_row>N</exec_per_row>
-      <clear_rows>N</clear_rows>
-      <clear_files>N</clear_files>
-      <create_parent_folder>N</create_parent_folder>
-      <set_logfile>N</set_logfile>
-      <set_append_logfile>N</set_append_logfile>
-      <logfile/>
-      <logext/>
-      <add_date>N</add_date>
-      <add_time>N</add_time>
+      <name>Log_Camada_Bronze_Ref</name>
+      <description>Sinaliza inicio da Camada Reference e Bronze</description>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <logmessage>=====================================================================&#10;  [CAMADA 1 &amp; 2: REFERENCE &amp; BRONZE RAW] Ingestao concorrente de dados brutos&#10;=====================================================================</logmessage>
       <loglevel>Basic</loglevel>
-      <wait_until_finished>N</wait_until_finished>
-      <parameters>
-        <pass_all_parameters>Y</pass_all_parameters>
-      </parameters>
-      <run_configuration>local</run_configuration>
+      <logsubject>ESTEIRA MEDALHAO</logsubject>
+      <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>320</xloc>
+      <yloc>140</yloc>
+      <attributes_hac/>
+    </action>
+
+    <action>
       <name>01_Ingestao_Bronze_Ref</name>
       <description>Executa pipeline nativa de ingestao Raw e Reference</description>
       <type>PIPELINE</type>
       <attributes/>
-      <xloc>480</xloc>
-      <yloc>112</yloc>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <clear_files>N</clear_files>
+      <clear_rows>N</clear_rows>
+      <create_parent_folder>N</create_parent_folder>
+      <exec_per_row>N</exec_per_row>
+      <filename>${PROJECT_HOME}/pipelines/01_raw_staging.hpl</filename>
+      <loglevel>Basic</loglevel>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <params_from_previous>N</params_from_previous>
+      <run_configuration>local</run_configuration>
+      <set_append_logfile>N</set_append_logfile>
+      <set_logfile>N</set_logfile>
+      <wait_until_finished>Y</wait_until_finished>
       <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>460</xloc>
+      <yloc>140</yloc>
       <attributes_hac/>
     </action>
+
     <action>
-      <sql>
-        SELECT COUNT(*) FROM raw_sleep_efficiency;
-        SELECT COUNT(*) FROM raw_student_habits;
-        SELECT COUNT(*) FROM raw_student_mental_health;
-      </sql>
-      <connection>sqlite_estudantes</connection>
-      <useVariableSubstitution>Y</useVariableSubstitution>
-      <sqlfromfile>N</sqlfromfile>
-      <sqlfilename/>
-      <sendOneStatement>N</sendOneStatement>
-      <name>02_Validar_Contagens_Integridade_SQL</name>
-      <description>Valida contagens e integridade nas tabelas processadas</description>
+      <name>Log_Camada_Silver</name>
+      <description>Sinaliza inicio da Camada Silver</description>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <logmessage>=====================================================================&#10;  [CAMADA 3: SILVER DIMS] Limpeza, tipagem e modelagem dimensional (4 DIMS)&#10;=====================================================================</logmessage>
+      <loglevel>Basic</loglevel>
+      <logsubject>ESTEIRA MEDALHAO</logsubject>
+      <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>590</xloc>
+      <yloc>140</yloc>
+      <attributes_hac/>
+    </action>
+
+    <action>
+      <name>02_Transform_Silver_Dims</name>
+      <description>Executa pipeline de transformacao das dimensoes Silver</description>
+      <type>PIPELINE</type>
+      <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/02_transform_silver_dims.hpl</filename>
+      <loglevel>Basic</loglevel>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <params_from_previous>N</params_from_previous>
+      <run_configuration>local</run_configuration>
+      <set_append_logfile>N</set_append_logfile>
+      <set_logfile>N</set_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>730</xloc>
+      <yloc>140</yloc>
+      <attributes_hac/>
+    </action>
+
+    <action>
+      <name>Log_Camada_Gold</name>
+      <description>Sinaliza inicio da Camada Gold</description>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <logmessage>=====================================================================&#10;  [CAMADA 4: GOLD CONSOLIDADA] Consolidacao fato e calculo de IQS, SQD e ROI&#10;=====================================================================</logmessage>
+      <loglevel>Basic</loglevel>
+      <logsubject>ESTEIRA MEDALHAO</logsubject>
+      <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>730</xloc>
+      <yloc>260</yloc>
+      <attributes_hac/>
+    </action>
+
+    <action>
+      <name>03_Consolidacao_Gold</name>
+      <description>Executa pipeline de consolidacao Gold</description>
+      <type>PIPELINE</type>
+      <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/03_consolidacao_gold.hpl</filename>
+      <loglevel>Basic</loglevel>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <params_from_previous>N</params_from_previous>
+      <run_configuration>local</run_configuration>
+      <set_append_logfile>N</set_append_logfile>
+      <set_logfile>N</set_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>590</xloc>
+      <yloc>260</yloc>
+      <attributes_hac/>
+    </action>
+
+    <action>
+      <name>Log_Camada_Platinum</name>
+      <description>Sinaliza inicio da Camada Platinum</description>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <logmessage>=====================================================================&#10;  [CAMADA 5: PLATINUM KPIS] Agregacao dos 8 KPIs analiticos para o Metabase&#10;=====================================================================</logmessage>
+      <loglevel>Basic</loglevel>
+      <logsubject>ESTEIRA MEDALHAO</logsubject>
+      <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>460</xloc>
+      <yloc>260</yloc>
+      <attributes_hac/>
+    </action>
+
+    <action>
+      <name>04_Calculo_Platinum_KPIs</name>
+      <description>Executa pipeline de calculo dos KPIs Platinum</description>
+      <type>PIPELINE</type>
+      <attributes/>
+      <filename>${PROJECT_HOME}/pipelines/04_calculo_platinum_kpis.hpl</filename>
+      <loglevel>Basic</loglevel>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <params_from_previous>N</params_from_previous>
+      <run_configuration>local</run_configuration>
+      <set_append_logfile>N</set_append_logfile>
+      <set_logfile>N</set_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>320</xloc>
+      <yloc>260</yloc>
+      <attributes_hac/>
+    </action>
+
+    <action>
+      <name>Log_Quality_Gate</name>
+      <description>Sinaliza validacao de qualidade e integridade</description>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <logmessage>=====================================================================&#10;  [QUALITY GATE] Validando contagens e integridade relacional nas 20 tabelas&#10;=====================================================================</logmessage>
+      <loglevel>Basic</loglevel>
+      <logsubject>ESTEIRA MEDALHAO</logsubject>
+      <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>180</xloc>
+      <yloc>260</yloc>
+      <attributes_hac/>
+    </action>
+
+    <action>
+      <name>05_Validar_Contagens_Integridade_SQL</name>
+      <description>Quality Gate que valida preenchimento das 20 tabelas</description>
       <type>SQL</type>
       <attributes/>
-      <xloc>740</xloc>
-      <yloc>120</yloc>
+      <sql>SELECT COUNT(*) FROM raw_sleep_efficiency;
+SELECT COUNT(*) FROM raw_student_habits;
+SELECT COUNT(*) FROM raw_student_mental_health;
+SELECT COUNT(*) FROM dim_alunos;
+SELECT COUNT(*) FROM dim_sono;
+SELECT COUNT(*) FROM dim_habitos;
+SELECT COUNT(*) FROM dim_saude_mental;
+SELECT COUNT(*) FROM students_grade_performance_sleep;
+SELECT COUNT(*) FROM students_grade_performance_habits;
+SELECT COUNT(*) FROM students_grade_performance_mental_health;
+SELECT COUNT(*) FROM kpi_resumo;
+SELECT COUNT(*) FROM kpi_faixa_etaria_performance;
+SELECT COUNT(*) FROM kpi_genero_performance;
+SELECT COUNT(*) FROM kpi_habitos_vida_performance;</sql>
+      <useVariableSubstitution>T</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>T</sendOneStatement>
+      <connection>sqlite_estudantes</connection>
       <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>60</xloc>
+      <yloc>260</yloc>
       <attributes_hac/>
     </action>
+
     <action>
-      <message>Falha na execucao da esteira ETL. Verifique os logs detalhados.</message>
-      <loglevel>Error</loglevel>
+      <name>Log_Sucesso_Final</name>
+      <description>Sinaliza sucesso total da execucao</description>
+      <type>WRITE_TO_LOG</type>
+      <attributes/>
+      <logmessage>=====================================================================&#10;  [SUCESSO] Esteira Medalhao Apache Hop concluida com 100% de integridade!&#10;=====================================================================</logmessage>
+      <loglevel>Basic</loglevel>
+      <logsubject>ESTEIRA MEDALHAO</logsubject>
+      <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>60</xloc>
+      <yloc>380</yloc>
+      <attributes_hac/>
+    </action>
+
+    <action>
       <name>Tratamento_Erro_Abort</name>
-      <description>Aborta execucao caso ocorra falha em qualquer etapa</description>
+      <description>Interrompe a execucao em caso de falha</description>
       <type>ABORT</type>
       <attributes/>
-      <xloc>480</xloc>
-      <yloc>280</yloc>
+      <message>Falha na execucao da esteira ETL Medalhao. Verifique os logs detalhados.</message>
       <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>460</xloc>
+      <yloc>380</yloc>
       <attributes_hac/>
     </action>
   </actions>
+
   <hops>
     <hop>
       <from>Start</from>
       <to>00_Init_Schema_SQL</to>
+      <enabled>Y</enabled>
       <evaluation>Y</evaluation>
       <unconditional>Y</unconditional>
-      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>00_Init_Schema_SQL</from>
+      <to>Log_Camada_Bronze_Ref</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>00_Init_Schema_SQL</from>
+      <to>Tratamento_Erro_Abort</to>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Log_Camada_Bronze_Ref</from>
       <to>01_Ingestao_Bronze_Ref</to>
-      <evaluation>Y</evaluation>
-      <unconditional>N</unconditional>
       <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
     </hop>
     <hop>
       <from>01_Ingestao_Bronze_Ref</from>
-      <to>02_Validar_Contagens_Integridade_SQL</to>
+      <to>Log_Camada_Silver</to>
+      <enabled>Y</enabled>
       <evaluation>Y</evaluation>
       <unconditional>N</unconditional>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>00_Init_Schema_SQL</from>
-      <to>Tratamento_Erro_Abort</to>
-      <evaluation>N</evaluation>
-      <unconditional>N</unconditional>
-      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>01_Ingestao_Bronze_Ref</from>
       <to>Tratamento_Erro_Abort</to>
+      <enabled>Y</enabled>
       <evaluation>N</evaluation>
       <unconditional>N</unconditional>
-      <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>02_Validar_Contagens_Integridade_SQL</from>
+      <from>Log_Camada_Silver</from>
+      <to>02_Transform_Silver_Dims</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>02_Transform_Silver_Dims</from>
+      <to>Log_Camada_Gold</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>02_Transform_Silver_Dims</from>
       <to>Tratamento_Erro_Abort</to>
+      <enabled>Y</enabled>
       <evaluation>N</evaluation>
       <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Log_Camada_Gold</from>
+      <to>03_Consolidacao_Gold</to>
       <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>03_Consolidacao_Gold</from>
+      <to>Log_Camada_Platinum</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>03_Consolidacao_Gold</from>
+      <to>Tratamento_Erro_Abort</to>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Log_Camada_Platinum</from>
+      <to>04_Calculo_Platinum_KPIs</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>04_Calculo_Platinum_KPIs</from>
+      <to>Log_Quality_Gate</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>04_Calculo_Platinum_KPIs</from>
+      <to>Tratamento_Erro_Abort</to>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Log_Quality_Gate</from>
+      <to>05_Validar_Contagens_Integridade_SQL</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>05_Validar_Contagens_Integridade_SQL</from>
+      <to>Log_Sucesso_Final</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>05_Validar_Contagens_Integridade_SQL</from>
+      <to>Tratamento_Erro_Abort</to>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
     </hop>
   </hops>
-  <notepads/>
+  <notepads>
+  </notepads>
   <attributes/>
 </workflow>

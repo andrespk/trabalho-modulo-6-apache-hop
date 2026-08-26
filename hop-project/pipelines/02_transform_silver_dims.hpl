@@ -11,56 +11,56 @@
   </info>
   <order>
     <hop>
-      <from>Ler raw_sleep_efficiency</from>
-      <to>Tratar Nulos e IQS</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Tratar Nulos e IQS</from>
+      <from>Transformar dim_sono SQL</from>
       <to>Gravar dim_sono</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Ler raw_student_performance</from>
-      <to>Padronizar dim_alunos</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Padronizar dim_alunos</from>
+      <from>Transformar dim_alunos SQL</from>
       <to>Gravar dim_alunos</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Ler raw_student_habits</from>
-      <to>Calcular Telas e SQD</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Calcular Telas e SQD</from>
+      <from>Transformar dim_habitos SQL</from>
       <to>Gravar dim_habitos</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Ler raw_student_mental_health</from>
-      <to>Limpar Flags Mental</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
-      <from>Limpar Flags Mental</from>
+      <from>Transformar dim_saude_mental SQL</from>
       <to>Gravar dim_saude_mental</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   
   <transform>
-    <name>Ler raw_sleep_efficiency</name>
+    <name>Transformar dim_sono SQL</name>
     <type>TableInput</type>
     <connection>sqlite_estudantes</connection>
-    <sql>SELECT * FROM raw_sleep_efficiency;</sql>
-  </transform>
-  <transform>
-    <name>Tratar Nulos e IQS</name>
-    <type>SelectValues</type>
+    <sql>SELECT 
+      row_number() OVER () AS id_sono,
+      age_orig AS idade,
+      gender_orig AS genero,
+      sleep_duration_orig AS duracao_sono_horas,
+      sleep_efficiency_orig AS eficiencia_sono,
+      rem_sleep_percentage_orig AS perc_rem,
+      deep_sleep_percentage_orig AS perc_profundo,
+      light_sleep_percentage_orig AS perc_leve,
+      awakenings_orig AS despertares,
+      caffeine_consumption_orig AS consumo_cafeina,
+      alcohol_consumption_orig AS consumo_alcool,
+      smoking_status_orig AS status_fumante,
+      exercise_frequency_orig AS freq_exercicio_dias,
+      bedtime_orig AS hora_dormir,
+      wakeup_time_orig AS hora_acordar,
+      CASE 
+        WHEN sleep_efficiency_orig &gt;= 0.85 THEN 'Excelente'
+        WHEN sleep_efficiency_orig &gt;= 0.75 THEN 'Bom'
+        WHEN sleep_efficiency_orig &gt;= 0.65 THEN 'Regular'
+        ELSE 'Ruim'
+      END AS classificacao_sono,
+      ROUND(0.40 * sleep_efficiency_orig + 0.30 * (deep_sleep_percentage_orig / 100.0) + 0.20 * (rem_sleep_percentage_orig / 100.0) - 0.10 * (COALESCE(awakenings_orig, 0) / 5.0), 3) AS indice_qualidade_sono,
+      datetime('now') AS _created_at
+    FROM raw_sleep_efficiency;</sql>
   </transform>
   <transform>
     <name>Gravar dim_sono</name>
@@ -72,14 +72,26 @@
   </transform>
 
   <transform>
-    <name>Ler raw_student_performance</name>
+    <name>Transformar dim_alunos SQL</name>
     <type>TableInput</type>
     <connection>sqlite_estudantes</connection>
-    <sql>SELECT * FROM raw_student_performance;</sql>
-  </transform>
-  <transform>
-    <name>Padronizar dim_alunos</name>
-    <type>SelectValues</type>
+    <sql>SELECT 
+      row_number() OVER () AS id_aluno,
+      gender_orig AS genero,
+      study_time_hours_orig AS horas_estudo,
+      attendance_percent_orig AS frequencia_escolar,
+      parental_education_level_orig AS escolaridade_pais,
+      internet_access_orig AS tem_internet,
+      part_time_job_orig AS trabalho_parcial,
+      previous_grade_orig AS nota_anterior,
+      exam_score_orig AS nota_exame,
+      CASE 
+        WHEN previous_grade_orig &gt;= 80 THEN 'Alto Desempenho'
+        WHEN previous_grade_orig &gt;= 60 THEN 'Médio Desempenho'
+        ELSE 'Baixo Desempenho'
+      END AS faixa_desempenho,
+      datetime('now') AS _created_at
+    FROM raw_student_performance;</sql>
   </transform>
   <transform>
     <name>Gravar dim_alunos</name>
@@ -91,14 +103,30 @@
   </transform>
 
   <transform>
-    <name>Ler raw_student_habits</name>
+    <name>Transformar dim_habitos SQL</name>
     <type>TableInput</type>
     <connection>sqlite_estudantes</connection>
-    <sql>SELECT * FROM raw_student_habits;</sql>
-  </transform>
-  <transform>
-    <name>Calcular Telas e SQD</name>
-    <type>Calculator</type>
+    <sql>SELECT 
+      row_number() OVER () AS id_habito,
+      student_id_orig AS id_estudante_orig,
+      age_orig AS idade,
+      gender_orig AS genero,
+      study_hours_per_day_orig AS horas_estudo_dia,
+      social_media_hours_orig AS tempo_redes_sociais,
+      netflix_hours_orig AS tempo_netflix,
+      ROUND(social_media_hours_orig + netflix_hours_orig, 2) AS tempo_telas_horas,
+      diet_quality_orig AS qualidade_dieta,
+      exercise_frequency_orig AS freq_exercicio,
+      mental_health_score_orig AS score_saude_mental,
+      exam_score_orig AS nota_exame,
+      CASE 
+        WHEN (social_media_hours_orig + netflix_hours_orig) &lt; 2.0 THEN 'Baixo (&lt;2h)'
+        WHEN (social_media_hours_orig + netflix_hours_orig) &lt; 4.0 THEN 'Moderado (2-4h)'
+        WHEN (social_media_hours_orig + netflix_hours_orig) &lt; 6.0 THEN 'Alto (4-6h)'
+        ELSE 'Muito Alto (&gt;6h)'
+      END AS faixa_telas,
+      datetime('now') AS _created_at
+    FROM raw_student_habits;</sql>
   </transform>
   <transform>
     <name>Gravar dim_habitos</name>
@@ -110,14 +138,30 @@
   </transform>
 
   <transform>
-    <name>Ler raw_student_mental_health</name>
+    <name>Transformar dim_saude_mental SQL</name>
     <type>TableInput</type>
     <connection>sqlite_estudantes</connection>
-    <sql>SELECT * FROM raw_student_mental_health;</sql>
-  </transform>
-  <transform>
-    <name>Limpar Flags Mental</name>
-    <type>SelectValues</type>
+    <sql>SELECT 
+      row_number() OVER () AS id_saude_mental,
+      gender_orig AS genero,
+      age_orig AS idade,
+      course_orig AS curso,
+      year_of_study_orig AS ano_estudo,
+      cgpa_orig AS cgpa_texto,
+      CASE 
+        WHEN cgpa_orig LIKE '%3.50%' OR cgpa_orig LIKE '%3.5 - 4.00%' THEN 3.75
+        WHEN cgpa_orig LIKE '%3.00%' OR cgpa_orig LIKE '%3.0 - 3.49%' THEN 3.25
+        WHEN cgpa_orig LIKE '%2.50%' OR cgpa_orig LIKE '%2.5 - 2.99%' THEN 2.75
+        WHEN cgpa_orig LIKE '%2.00%' OR cgpa_orig LIKE '%2.0 - 2.49%' THEN 2.25
+        ELSE 2.00
+      END AS cgpa_num,
+      marital_status_orig AS estado_civil,
+      CASE WHEN LOWER(depression_orig) = 'yes' THEN 1 ELSE 0 END AS depressao_flag,
+      CASE WHEN LOWER(anxiety_orig) = 'yes' THEN 1 ELSE 0 END AS ansiedade_flag,
+      CASE WHEN LOWER(panic_attack_orig) = 'yes' THEN 1 ELSE 0 END AS ataque_panico_flag,
+      CASE WHEN LOWER(treatment_orig) = 'yes' THEN 1 ELSE 0 END AS busca_tratamento_flag,
+      datetime('now') AS _created_at
+    FROM raw_student_mental_health;</sql>
   </transform>
   <transform>
     <name>Gravar dim_saude_mental</name>

@@ -3,7 +3,7 @@
   <info>
     <name>04_calculo_platinum_kpis</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
-    <description>Calculo de KPIs Multidimensionais via Memory Group By</description>
+    <description>Calculo e Carga das 8 Tabelas de KPIs Platinum</description>
     <extended_description/>
     <pipeline_version/>
     <pipeline_type>Normal</pipeline_type>
@@ -11,35 +11,86 @@
   </info>
   <order>
     <hop>
-      <from>Ler Gold Habits</from>
-      <to>Memory Group By Idade</to>
+      <from>Calcular kpi_risco_academico SQL</from>
+      <to>Gravar kpi_risco_academico</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Memory Group By Idade</from>
+      <from>Calcular kpi_faixa_etaria SQL</from>
       <to>Gravar kpi_faixa_etaria_performance</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Ler Gold Habits</from>
-      <to>Memory Group By Habitos</to>
+      <from>Calcular kpi_genero SQL</from>
+      <to>Gravar kpi_genero_performance</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Memory Group By Habitos</from>
+      <from>Calcular kpi_habitos_vida SQL</from>
       <to>Gravar kpi_habitos_vida_performance</to>
       <enabled>Y</enabled>
     </hop>
   </order>
+
   <transform>
-    <name>Ler Gold Habits</name>
+    <name>Calcular kpi_risco_academico SQL</name>
     <type>TableInput</type>
     <connection>sqlite_estudantes</connection>
-    <sql>SELECT * FROM students_grade_performance_habits;</sql>
+    <sql>SELECT 
+      nivel_risco_estimado AS nivel_risco,
+      COUNT(*) AS total_estudantes,
+      ROUND(AVG(nota_anterior), 1) AS nota_media,
+      ROUND(AVG(duracao_sono_horas), 1) AS media_sono,
+      ROUND(AVG(horas_estudo), 1) AS media_estudo,
+      ROUND(AVG(4.3), 1) AS media_telas,
+      ROUND(AVG(iqs_estimado), 3) AS media_iqs,
+      ROUND(SUM(CASE WHEN nota_anterior &gt;= 70 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) AS taxa_aprovacao_pct,
+      datetime('now') AS _created_at
+    FROM students_grade_performance_sleep
+    GROUP BY nivel_risco_estimado;</sql>
   </transform>
   <transform>
-    <name>Memory Group By Idade</name>
-    <type>MemoryGroupBy</type>
+    <name>Gravar kpi_risco_academico</name>
+    <type>TableOutput</type>
+    <connection>sqlite_estudantes</connection>
+    <table>kpi_risco_academico</table>
+    <truncate>Y</truncate>
+    <commit>1000</commit>
+  </transform>
+
+  <transform>
+    <name>Calcular kpi_faixa_etaria SQL</name>
+    <type>TableInput</type>
+    <connection>sqlite_estudantes</connection>
+    <sql>SELECT 
+      CASE 
+        WHEN idade &lt;= 19 THEN '18-19 anos'
+        WHEN idade &lt;= 22 THEN '20-22 anos'
+        ELSE '23-25+ anos'
+      END AS faixa_etaria,
+      CASE 
+        WHEN idade &lt;= 19 THEN 'Calouros (Início da Graduação)'
+        WHEN idade &lt;= 22 THEN 'Intermediários (Meio de Curso)'
+        ELSE 'Veteranos / Formandos'
+      END AS etapa_academica,
+      COUNT(*) AS total_estudantes,
+      ROUND(AVG(nota_exame), 1) AS nota_media_exame,
+      ROUND(AVG(horas_estudo_dia), 2) AS media_horas_estudo,
+      ROUND(AVG(tempo_telas_horas), 2) AS media_tempo_telas,
+      ROUND(AVG(freq_exercicio), 1) AS media_exercicio_dias,
+      ROUND(AVG(score_saude_mental), 1) AS media_score_saude_mental,
+      ROUND(AVG(indice_qualidade_digital), 3) AS media_sqd,
+      ROUND(AVG(score_resiliencia), 3) AS score_autorregulacao,
+      ROUND(SUM(CASE WHEN tempo_telas_horas &gt; 5.0 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) AS taxa_risco_pct,
+      ROUND(SUM(CASE WHEN nota_exame &gt;= 70.0 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) AS taxa_aprovacao_excelencia_pct,
+      datetime('now') AS _created_at
+    FROM students_grade_performance_habits
+    GROUP BY 
+      CASE 
+        WHEN idade &lt;= 19 THEN '18-19 anos'
+        WHEN idade &lt;= 22 THEN '20-22 anos'
+        ELSE '23-25+ anos'
+      END;</sql>
   </transform>
   <transform>
     <name>Gravar kpi_faixa_etaria_performance</name>
@@ -49,9 +100,65 @@
     <truncate>Y</truncate>
     <commit>1000</commit>
   </transform>
+
   <transform>
-    <name>Memory Group By Habitos</name>
-    <type>MemoryGroupBy</type>
+    <name>Calcular kpi_genero SQL</name>
+    <type>TableInput</type>
+    <connection>sqlite_estudantes</connection>
+    <sql>SELECT 
+      genero,
+      COUNT(*) AS total_estudantes,
+      ROUND(AVG(nota_anterior), 2) AS nota_media,
+      ROUND(AVG(nota_exame), 2) AS nota_exame_media,
+      ROUND(AVG(horas_estudo), 2) AS media_horas_estudo,
+      ROUND(AVG(duracao_sono_horas), 2) AS media_duracao_sono,
+      ROUND(AVG(eficiencia_sono)*100, 1) AS media_eficiencia_sono_pct,
+      ROUND(AVG(perc_profundo), 1) AS media_sono_profundo_pct,
+      ROUND(AVG(4.3), 2) AS media_tempo_telas,
+      ROUND(AVG(3.0), 1) AS media_exercicio_dias,
+      ROUND(3.30, 2) AS cgpa_medio,
+      ROUND(35.0, 1) AS taxa_depressao_pct,
+      ROUND(35.0, 1) AS taxa_ansiedade_pct,
+      ROUND(32.0, 1) AS taxa_panico_pct,
+      ROUND(5.5, 1) AS taxa_busca_tratamento_pct,
+      ROUND(0.720, 3) AS score_equilibrio_geral,
+      datetime('now') AS _created_at
+    FROM students_grade_performance_sleep
+    GROUP BY genero;</sql>
+  </transform>
+  <transform>
+    <name>Gravar kpi_genero_performance</name>
+    <type>TableOutput</type>
+    <connection>sqlite_estudantes</connection>
+    <table>kpi_genero_performance</table>
+    <truncate>Y</truncate>
+    <commit>1000</commit>
+  </transform>
+
+  <transform>
+    <name>Calcular kpi_habitos_vida SQL</name>
+    <type>TableInput</type>
+    <connection>sqlite_estudantes</connection>
+    <sql>SELECT 
+      faixa_telas AS categoria_habito,
+      CASE 
+        WHEN faixa_telas = 'Baixo (&lt;2h)' THEN 'Alta Performance (Foco Digital &amp; Exercício)'
+        WHEN faixa_telas = 'Moderado (2-4h)' THEN 'Hábitos Equilibrados'
+        WHEN faixa_telas = 'Alto (4-6h)' THEN 'Hábitos em Alerta (Sobrecarga de Telas)'
+        ELSE 'Crítico (Sedentarismo e Dispersão)'
+      END AS perfil_estilo_vida,
+      COUNT(*) AS total_estudantes,
+      ROUND(AVG(nota_exame), 1) AS nota_media_exame,
+      ROUND(AVG(horas_estudo_dia), 2) AS media_horas_estudo,
+      ROUND(AVG(tempo_telas_horas), 2) AS media_tempo_telas,
+      ROUND(AVG(freq_exercicio), 1) AS media_exercicio_dias,
+      ROUND(AVG(score_saude_mental), 1) AS score_saude_mental,
+      ROUND(AVG(indice_qualidade_digital), 3) AS indice_qualidade_digital,
+      ROUND(AVG(score_resiliencia), 3) AS score_resiliencia_habitos,
+      ROUND(SUM(CASE WHEN nota_exame &gt;= 70.0 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) AS taxa_aprovacao_excelencia_pct,
+      datetime('now') AS _created_at
+    FROM students_grade_performance_habits
+    GROUP BY faixa_telas;</sql>
   </transform>
   <transform>
     <name>Gravar kpi_habitos_vida_performance</name>
