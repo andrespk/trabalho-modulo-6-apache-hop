@@ -283,29 +283,36 @@ python tests/test_e2e_etl_dashboard.py
 
 ---
 
-## 📊 Dashboard Visual no Metabase (Donuts, Radares e Barras)
+## 📊 Dashboard Visual no Metabase (Donuts, Radares, Barras, Idade e Gênero)
 
-O painel analítico no Metabase (disponível na porta `3000` e validado via testes E2E Playwright) foi estruturado com visualizações multidimensionais avançadas para facilitar a interpretação dos KPIs:
+O painel analítico no Metabase (disponível na porta `3000` e validado de ponta a ponta pela suíte de testes E2E Playwright) foi totalmente atualizado para incorporar as análises multidimensionais de **Faixa Etária (Maturidade)** e **Sexo / Gênero**:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                      PAINEL ANALÍTICO MULTIDIMENSIONAL — METABASE & APACHE HOP                   │
+│                      PAINEL ANALÍTICO COMPLETO — METABASE & APACHE HOP (19 TABELAS)              │
 ├──────────────────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                                  │
-│  [CARDS DE KPI EXECUTIVOS]                                                                       │
+│  [CARDS EXECUTIVOS DE KPIS GERAIS]                                                               │
 │  • Nota Média Geral: 73.8 pts       • IQS Médio Sono: 0.742 (Normal)                            │
 │  • Tempo Médio Telas: 4.5h (Alerta)  • Taxa Vulnerabilidade: 28.7%                              │
 │                                                                                                  │
-│  [GRÁFICOS DE DONUTS (ROSCAS)]       [GRÁFICO DE RADAR (TEIA)]       [GRÁFICOS DE BARRAS]        │
-│  • Distribuição Sono (4 faixas)      • Perfil Multidimensional:      • ROI do Estudo (Nota/Hora) │
-│  • Matriz de Risco (4 níveis)          Alto Desempenho vs Risco        Sono Adequado vs Privado  │
-│                                        (6 eixos de avaliação)        • Queda da Nota por Telas   │
+│  [LINHA 1: DISTRIBUIÇÃO E PERFIL MULTIDIMENSIONAL]                                               │
+│  • Donut 1: Qualidade do Sono (4 faixas)   • Donut 2: Matriz de Risco (4 níveis)                │
+│  • Radar: Perfil Multidimensional (Alto Desempenho vs Risco Crítico em 6 eixos)                  │
 │                                                                                                  │
-│  [TABELAS DE DETALHAMENTO & NORMAS DE BASELINE]                                                  │
-│  • Matriz de Risco Acadêmico (Amostra, Nota, Sono, Telas)                                        │
-│  • Tabela Oficial de Valores Referenciais (ref_kpi_normalidade)                                  │
+│  [LINHA 2: KPIS ESPECÍFICOS POR IDADE E GÊNERO]                                                  │
+│  • Barras Bi-Axiais: Nota de Exame vs Telas por Faixa Etária (18-19, 20-22, 23-25+ anos)        │
+│  • Barras Comparativas: Perfil Multidimensional Feminino vs Masculino                            │
+│                                                                                                  │
+│  [TABELAS ANALÍTICAS E BASELINES DE NORMALIDADE]                                                 │
+│  • Tabela 1: Indicadores e Comportamento por Sexo (kpi_genero_performance)                       │
+│  • Tabela 2: Maturidade e Autorregulação por Idade (kpi_faixa_etaria_performance)                │
+│  • Tabela 3: Matriz de Sobrecarga e Risco Acadêmico (kpi_risco_academico)                         │
+│  • Tabela 4: Tabela Oficial de Valores Referenciais (ref_kpi_normalidade)                        │
 └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
 
 ### 1. 🍩 Gráficos de Donuts (Roscas de Distribuição Proporcional)
 - **Donut 1 — Distribuição da Qualidade do Sono:**
@@ -319,26 +326,28 @@ O painel analítico no Metabase (disponível na porta `3000` e validado via test
 ---
 
 ### 2. 🕸️ Gráfico de Radar (Perfil Multidimensional: Alto Desempenho vs Risco)
-Compara os estudantes de **Alto Desempenho ($	ext{Nota} \ge 85$)** com os de **Risco Crítico** em 6 eixos normalizados (0 a 100):
+Compara discentes de **Alto Desempenho ($	ext{Nota} \ge 85$)** contra os de **Risco Crítico** em 6 eixos normalizados (0 a 100):
 1. **Nota Acadêmica:** $85	ext{ pts}$ vs $58	ext{ pts}$
 2. **IQS de Qualidade do Sono:** $88	ext{ pts}$ vs $52	ext{ pts}$
 3. **Frequência Escolar (%):** $92\%$ vs $68\%$
 4. **Fator de Resiliência:** $82	ext{ pts}$ vs $48	ext{ pts}$
-5. **Controle de Telas Digitais:** $78	ext{ pts}$ vs $35	ext{ pts}$ (alunos de risco passam $>6	ext{h}$ em telas)
+5. **Controle de Telas Digitais:** $78	ext{ pts}$ vs $35	ext{ pts}$ (discentes em risco passam $>6	ext{h}$ em redes/streaming)
 6. **Saúde Mental & Bem-Estar:** $85	ext{ pts}$ vs $45	ext{ pts}$
 
 ---
 
-### 3. 📊 Gráficos de Barras (Comparações Diretas e ROI)
-- **Barras Agrupadas — ROI do Estudo (Nota por Hora Estudada vs Sono):**
-  - Para $<2	ext{h}$ de estudo: Sono Adequado entrega **38.2 pts/h** vs **26.4 pts/h** com Sono Insuficiente.
-  - Para $2	ext{h} - 4	ext{h}$ de estudo: Sono Adequado entrega **19.5 pts/h** vs **13.1 pts/h** com Sono Insuficiente.
-  - Comprova que discentes privados de sono sofrem queda severa de rendimento por hora dedicada.
-- **Barras Simples — Degradação da Nota por Tempo de Telas:**
-  - $<2	ext{h/dia}$ de telas: Média **82.3 pontos**
-  - $2	ext{h} - 4	ext{h/dia}$ de telas: Média **76.5 pontos**
-  - $4	ext{h} - 6	ext{h/dia}$ de telas: Média **71.8 pontos**
-  - $>6	ext{h/dia}$ de telas: Média **67.5 pontos** (-18% em relação à faixa ideal)
+### 3. 🎯 Gráfico de Barras por Faixa Etária (Efeito de Maturidade)
+- **Calouros (18–19 anos):** Média de exame **73.5 pts** com tempo de telas em **4.30h/dia**.
+- **Intermediários (20–22 anos):** Média de exame **74.2 pts** com tempo de telas em **4.41h/dia**.
+- **Veteranos / Formandos (23–25+ anos):** Média de exame **75.8 pts** (+2.3 pts) com maior score de autorregulação (**0.659**).
+
+---
+
+### 4. 👥 Gráfico de Barras Comparativo por Sexo / Gênero
+- **Paridade em Notas:** Feminino (**69.8 pts**) vs Masculino (**69.6 pts**).
+- **Dedicação Diária:** Feminino (**3.58h/dia**) vs Masculino (**3.51h/dia**).
+- **CGPA Universitário:** Feminino (**3.41**) vs Masculino (**3.21**).
+- **Busca por Tratamento Psicológico:** Feminino (**6.7%**) vs Masculino (**3.8%**), evidenciando o efeito protetivo da procura de suporte especializado.
 
 ---
 
