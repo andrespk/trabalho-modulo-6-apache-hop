@@ -7,17 +7,59 @@ base_url = "http://localhost:3001"
 
 print(f"=== INICIANDO PROVISIONAMENTO IDEMPOTENTE DO METABASE ({base_url}) ===")
 
-# 1. Autenticação na API do Metabase
+# 0. Verificar se o Metabase está na tela de Setup Inicial e Criar Usuário Automaticamente
 try:
-    session_req = urllib.request.Request(
-        f"{base_url}/api/session",
-        data=json.dumps({"username": "admin@uea.edu.br", "password": "HopAdmin2024!"}).encode('utf-8'),
-        headers={'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0'}
-    )
-    with urllib.request.urlopen(session_req, timeout=10) as resp:
-        session_id = json.loads(resp.read().decode('utf-8'))["id"]
+    prop_req = urllib.request.Request(f"{base_url}/api/session/properties", headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(prop_req, timeout=10) as resp:
+        props = json.loads(resp.read().decode('utf-8'))
+        setup_token = props.get("setup-token")
+        
+        if setup_token:
+            print(f"[INFRA SETUP] Metabase não configurado. Criando usuário padrão admin@uea.edu.br...")
+            setup_payload = {
+                "token": setup_token,
+                "user": {
+                    "first_name": "Admin",
+                    "last_name": "UEA",
+                    "email": "admin@uea.edu.br",
+                    "password": "HopAdmin2024!"
+                },
+                "prefs": {
+                    "site_name": "Apache Hop Analytics — UEA",
+                    "site_locale": "pt_BR",
+                    "allow_tracking": False
+                }
+            }
+            setup_req = urllib.request.Request(
+                f"{base_url}/api/setup",
+                data=json.dumps(setup_payload).encode('utf-8'),
+                headers={'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0'},
+                method="POST"
+            )
+            with urllib.request.urlopen(setup_req, timeout=15) as s_resp:
+                print(f"[INFRA SETUP] Usuário padrão criado com sucesso: admin@uea.edu.br / HopAdmin2024!")
 except Exception as e:
-    print(f"[AVISO] Não foi possível autenticar no Metabase em {base_url}: {e}")
+    print(f"[INFRA CHECK] Verificação de setup inicial: {e}")
+
+# 1. Autenticação na API do Metabase
+session_id = None
+for attempt in range(5):
+    try:
+        session_req = urllib.request.Request(
+            f"{base_url}/api/session",
+            data=json.dumps({"username": "admin@uea.edu.br", "password": "HopAdmin2024!"}).encode('utf-8'),
+            headers={'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0'}
+        )
+        with urllib.request.urlopen(session_req, timeout=10) as resp:
+            session_id = json.loads(resp.read().decode('utf-8'))["id"]
+            print(f"[AUTENTICAÇÃO] Sessão Metabase autenticada com sucesso!")
+            break
+    except Exception as e:
+        print(f"[AVISO] Tentativa {attempt+1}/5 de autenticação: {e}")
+        time.sleep(2)
+
+if not session_id:
+    print(f"[ERRO] Não foi possível autenticar no Metabase após 5 tentativas.")
     sys.exit(0)
 
 headers = {
@@ -50,6 +92,18 @@ for d in db_list:
         print(f"[IDEMPOTÊNCIA] Banco de Dados SQLite já registrado com ID: {db_id}")
         break
 
+if not any(d.get("id") == db_id for d in db_list):
+    print("[IDEMPOTÊNCIA] Cadastrando conexão SQLite no Metabase...")
+    db_payload = {
+        "engine": "sqlite",
+        "name": "Base de Estudantes UEA (estudantes.db)",
+        "details": {"db": "/data/estudantes.db"},
+        "is_full_sync": True
+    }
+    db_res = api("/api/database", method="POST", payload=db_payload)
+    if db_res:
+        db_id = db_res.get("id", 2)
+
 # 3. Idempotência no Dashboard
 dashboards = api("/api/dashboard") or []
 dash_list = dashboards.get("data", []) if isinstance(dashboards, dict) else dashboards
@@ -63,6 +117,14 @@ for d in dash_list:
         dash_exists = True
         print(f"[IDEMPOTÊNCIA] Dashboard existente identificado com ID: {dash_id}")
         break
+
+if not dash_exists:
+    new_dash = api("/api/dashboard", method="POST", payload={
+        "name": "Painel Integrado: Nota, Sono, Hábitos e Saúde Mental",
+        "description": "Dashboard Estruturado: 1. Visão Geral | 2. Visão por Idade | 3. Visão por Sexo — Pós-Graduação IA UEA"
+    })
+    if new_dash:
+        dash_id = new_dash.get("id", 2)
 
 # 4. Obter todos os cards já existentes para reutilizar IDs e evitar duplicações
 existing_cards = api("/api/card") or []

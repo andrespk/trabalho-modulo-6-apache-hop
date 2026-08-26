@@ -4,9 +4,8 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Dados locais do Metabase
-infra/metabase/*
-!infra/metabase/.gitkeep
+# Metabase H2 Database (Incluido na publicacao com usuario padrao admin@uea.edu.br e dashboard 2 pre-configurado)
+# !infra/metabase/metabase.db/*
 
-# Dados do SQLite (apenas banco gerado pode ser recriado via ETL)
-# infra/sqlite/*.db
+# Trace logs
+*.trace.db
