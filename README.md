@@ -2,7 +2,7 @@
 
 | Serviço / Aplicação | Link Direto de Acesso | Porta | Credenciais / Observações |
 |---|---|:---:|---|
-| 🌐 **Apache Hop Web (UI Web)** | [http://localhost:8085/ui](http://localhost:8085/ui) | `8085` | Interface gráfica web para edição e disparo de workflows |
+| 🌐 **Apache Hop Web (UI Web)** | [http://localhost:8085/ui](http://localhost:8085/ui-dark?project=hop-project&file=%2Ffiles%2Fhop-project%2Fworkflows%2Forquestrador_principal.hwf) | `8085` | Interface gráfica web para edição e disparo de workflows |
 | 📊 **Metabase Dashboard (BI)** | [http://localhost:3001/dashboard/2](http://localhost:3001/dashboard/2) | `3001` / `3000` | Usuário: `admin@uea.edu.br` \| Senha: `HopAdmin2024!` |
 | ⚙️ **Apache Hop Server (Engine)** | [http://localhost:8081](http://localhost:8081) | `8081` | Usuário: `cluster` \| Senha: `cluster` |
 | 🐙 **Repositório GitHub (Público)** | [https://github.com/andrespk/trabalho-modulo-6-apache-hop](https://github.com/andrespk/trabalho-modulo-6-apache-hop) | — | Código-fonte completo, testes E2E e documentação |
