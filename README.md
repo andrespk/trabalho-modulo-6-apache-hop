@@ -1,327 +1,378 @@
 # 📊 Performance de Alunos vs Sono, Hábitos e Saúde Mental
 ### Trabalho Final — Módulo 6: Apache Hop (Versão 2.0)
 
-> **Projeto ETL com Apache Hop | Integração de Múltiplas Fontes HTTPS | Indicadores e Dashboard**
+> **Engenharia de Dados | Apache Hop 2.19.0 | Ingestão HTTPS Dinâmica | SQLite Containerizado | Metabase**
 
 ---
 
-## 👥 Equipe
+## 👥 Identificação da Equipe
 
-| Nome | Papel |
+| Nome | Papel / Responsabilidade Principal |
 |---|---|
-| **Adriano Mourão** | Engenharia de Dados & Pipelines Apache Hop |
-| **André Marques** | Arquitetura ETL & Modelagem de Dados |
-| **Daniel Oliveira** | Ingestão HTTPS & Validação de Dados |
-| **Paulo Dourado** | Infraestrutura Docker & Banco SQLite |
-| **Thiago Leite** | Indicadores (KPIs) & Dashboard Metabase |
+| **Adriano Mourão** | Engenharia de Dados & Pipelines de Transformação Apache Hop |
+| **André Marques** | Arquitetura ETL, Modelagem Dimensional & Idempotência |
+| **Daniel Oliveira** | Ingestão HTTPS, Extração de APIs Kaggle & Qualidade de Dados |
+| **Paulo Dourado** | Infraestrutura Docker, Persistência SQLite & Orquestração |
+| **Thiago Leite** | Indicadores Analíticos (KPIs) & Dashboard no Metabase |
 
 ---
 
-## 📋 Identificação do Projeto
+## 📋 Ficha Técnica do Projeto
 
-| Campo | Detalhe |
+| Atributo | Especificação |
 |---|---|
-| **Módulo** | 6 — Apache Hop |
-| **Tema** | Performance de Alunos vs Qualidade de Sono, Hábitos e Saúde Mental |
-| **Ferramenta ETL** | Apache Hop 2.19.0 |
-| **Banco de Dados** | SQLite (containerizado via Docker) |
-| **Dashboard** | Metabase (containerizado via Docker) |
+| **Instituição / Curso** | Universidade do Estado do Amazonas (UEA) — Pós-Graduação em Inteligência Artificial |
+| **Módulo** | Módulo 6 — Engenharia de Dados & Apache Hop |
+| **Tema do Trabalho** | Performance Acadêmica vs Qualidade do Sono, Hábitos Digitais e Saúde Mental |
+| **Ferramenta ETL** | Apache Hop Client / Server versão 2.19.0 |
+| **Banco de Dados** | SQLite 3 (armazenado em volume persistente containerizado) |
+| **Dashboard BI** | Metabase v0.49+ (containerizado) |
+| **Apresentação Gamma** | [Link da Apresentação no Gamma](https://gamma.app/docs/Performance-de-Alunos-vs-Sono-Habitos-e-Saude-Mental-6h4l60izibsc1vp?mode=doc) |
 | **Idioma** | Português Brasileiro (pt-BR) |
 
 ---
 
-## 📂 Estrutura do Projeto
+## 📂 Estrutura Completa do Repositório
 
 ```
 trabalho-modulo-6-apache-hop/
-├── database/                                          # Fontes de dados CSV
-│   ├── Sleep_Efficiency.csv                          # Dataset Sono (452 reg.)
-│   ├── student_performance_dataset-selected-columns.csv # Dataset Alunos (1000 reg.)
-│   ├── student_habits_performance.csv                # Dataset Hábitos (1000 reg., via HTTPS)
-│   └── Student Mental health.csv                     # Dataset Saúde Mental (101 reg., via HTTPS)
-├── docs/
-│   └── Instruções para Trabalho Final - Módulo 6.pdf
+├── database/                                          # Armazenamento local de CSVs fontes
+│   ├── Sleep_Efficiency.csv                          # Dataset 1: Sono (452 reg.)
+│   ├── student_performance_dataset-selected-columns.csv # Dataset 2: Alunos (1000 reg.)
+│   ├── student_habits_performance.csv                # Dataset 3: Hábitos (1000 reg., baixado via HTTPS)
+│   └── Student Mental health.csv                     # Dataset 4: Saúde Mental (101 reg., baixado via HTTPS)
+├── docs/                                              # Documentações auxiliares e roteiros
+│   ├── Instruções para Trabalho Final - Módulo 6.pdf
+│   └── apresentacao_gamma_v2.md                      # Roteiro estruturado da apresentação Gamma
 ├── hop-project/                                       # Projeto Apache Hop
 │   ├── metadata/
 │   │   └── rdbms/
-│   │       └── sqlite_estudantes.json                # Conexão SQLite
-│   ├── pipelines/                                     # Pipelines de transformação
-│   │   ├── 00_download_datasets_https.hpl            # Ingestão HTTPS Kaggle
-│   │   ├── 01_ingestao_sono.hpl                      # Ingestão e limpeza: sono
-│   │   ├── 02_ingestao_alunos.hpl                    # Ingestão e limpeza: alunos
-│   │   ├── 03_ingestao_habitos.hpl                   # Ingestão e limpeza: hábitos
-│   │   ├── 04_ingestao_saude_mental.hpl              # Ingestão e limpeza: saúde mental
+│   │       └── sqlite_estudantes.json                # Metadados de conexão JDBC SQLite
+│   ├── pipelines/                                     # Pipelines unitárias de transformação (.hpl)
+│   │   ├── 00_download_datasets_https.hpl            # Ingestão HTTPS Kaggle API
+│   │   ├── 01_ingestao_sono.hpl                      # Ingestão, limpeza e scoring de sono
+│   │   ├── 02_ingestao_alunos.hpl                    # Ingestão e normalização de alunos
+│   │   ├── 03_ingestao_habitos.hpl                   # Ingestão e métricas de hábitos digitais
+│   │   ├── 04_ingestao_saude_mental.hpl              # Ingestão e mapeamento de saúde mental
 │   │   ├── 05_consolidacao_tabelas.hpl               # Cruzamento das 3 tabelas normalizadas
-│   │   └── 06_indicadores_kpi.hpl                    # KPIs e agregações
+│   │   └── 06_indicadores_kpi.hpl                    # Agregações de KPIs para o Dashboard
 │   ├── scripts/
-│   │   └── download_datasets.py                      # Script auxiliar HTTPS Kaggle
+│   │   └── download_datasets.py                      # Script utilitário para download HTTPS Kaggle
 │   ├── workflows/
-│   │   └── orquestrador_principal.hwf                # Workflow principal v2.0
-│   └── project-config.json                           # Configuração do projeto Hop
-├── infra/
-│   ├── docker-compose.yml                            # Orquestração Docker
+│   │   └── orquestrador_principal.hwf                # Workflow orquestrador sequencial (.hwf)
+│   └── project-config.json                           # Configuração do projeto e variáveis de ambiente
+├── infra/                                             # Camada de Infraestrutura Docker
+│   ├── docker-compose.yml                            # Composição dos containers Hop, SQLite e Metabase
 │   ├── sqlite/
-│   │   └── estudantes.db                             # Banco SQLite gerado pelo ETL
+│   │   └── estudantes.db                             # Banco SQLite populado pelo ETL
 │   └── metabase/
-│       └── metabase.db                               # Persistência Metabase
-└── README.md
+│       └── metabase.db                               # Volume de configurações do Metabase
+└── README.md                                          # Documentação principal da solução
 ```
 
 ---
 
-## 🎯 Problema Principal & Objetivos
+## 🎯 Problema Principal & Hipóteses Analíticas
 
-> **"Qual o impacto combinado do sono, dos hábitos diários (redes sociais, estudo, dieta, exercícios) e da saúde mental no desempenho acadêmico dos estudantes?"**
+> **"De que maneira a qualidade do sono, os hábitos de vida/telas e os fatores de saúde mental correlacionam-se com o desempenho acadêmico (notas e CGPA) dos estudantes?"**
 
-### Perguntas Analíticas Respondidas:
-1. **Sono vs Notas:** Alunos com sono adequado (7–9h) e alta eficiência têm notas superiores?
-2. **Gênero & Idade:** Como gênero e faixa etária influenciam o padrão de sono e o rendimento acadêmico?
-3. **Educação Parental:** O nível educacional dos pais impacta a rotina de estudo e o sono dos alunos?
-4. **Hábitos Digitais vs Estudo:** Quantas horas de telas (Netflix + Redes Sociais) começam a degradar as notas?
-5. **Saúde Mental & Desempenho:** Estudantes com sintomas de depressão, ansiedade ou pânico apresentam menor CGPA/desempenho?
-6. **Perfil Integrado:** Qual é o perfil de hábitos, sono e saúde mental do estudante com desempenho Excelente?
+### Hipóteses Analíticas Investigadas:
+1. **Hipótese do Sono:** Estudantes com sono na faixa adequada (7h a 9h) e alta eficiência de sono atingem notas superiores àqueles com privação de sono (<6h).
+2. **Hipótese de Hábitos & Telas:** O consumo excessivo de entretenimento digital (>6h/dia entre Redes Sociais e Netflix) degrada diretamente a nota média de exames.
+3. **Hipótese da Saúde Mental:** Estudantes com histórico de transtornos psicológicos (depressão, ansiedade, pânico) sem acompanhamento profissional apresentam maior vulnerabilidade no CGPA.
+4. **Hipótese Socioeducacional:** O nível de escolaridade dos pais exerce influência positiva tanto na rotina de sono e estudo quanto no aproveitamento escolar.
 
 ---
 
-## 📊 Datasets e Fontes de Dados
+## 📊 Datasets e Fontes de Dados (Kaggle)
 
-### 1. Sleep Efficiency Dataset
-- **Origem:** [Kaggle - Sleep Efficiency](https://www.kaggle.com/datasets/equilibriumm/sleep-efficiency)
-- **Arquivo:** `Sleep_Efficiency.csv` (452 registros)
-- **Atributos:** Idade, Gênero, Horário de dormir/acordar, Duração do sono, Eficiência do sono, % REM, % Sono Profundo, % Sono Leve, Despertares, Cafeína, Álcool, Tabagismo, Exercício.
-- **Campos Derivados:** `faixa_etaria`, `classificacao_sono`, `categoria_duracao_sono`, `indice_qualidade_sono (IQS)`.
-
-### 2. Student Performance Factors
-- **Origem:** [Kaggle - Student Performance Factors](https://www.kaggle.com/datasets/lainguyn123/student-performance-factors)
-- **Arquivo:** `student_performance_dataset-selected-columns.csv` (1000 registros)
-- **Atributos:** ID do Aluno, Gênero, Horas de estudo/dia, Frequência escolar %, Horas de sono, Escolaridade dos pais, Internet, Atividades extracurriculares, Trabalho parcial, Nota anterior.
-- **Campos Derivados:** `nivel_ensino_pais_label` (PT-BR), `classificacao_desempenho`, `categoria_horas_sono`, `faixa_estudo`, `nota_normalizada`.
-
-### 3. Student Habits vs Academic Performance (HTTPS Kaggle)
-- **Origem:** [Kaggle - Student Habits vs Academic Performance](https://www.kaggle.com/datasets/jayaantanaath/student-habits-vs-academic-performance)
-- **Arquivo:** `student_habits_performance.csv` (1000 registros)
-- **Atributos:** Horas de estudo, Horas de redes sociais, Horas de Netflix, Trabalho parcial, Frequência %, Horas de sono, Qualidade da dieta, Frequência de exercícios, Escolaridade dos pais, Qualidade da internet, Autoavaliação de saúde mental, Participação extracurricular, Nota do exame.
-- **Campos Derivados:** `tempo_telas_horas`, `categoria_tempo_telas`, `score_habitos_produtivos`, `score_integrado_habitos_nota`.
-
-### 4. Student Mental Health (HTTPS Kaggle)
-- **Origem:** [Kaggle - Student Mental Health](https://www.kaggle.com/datasets/shariful07/student-mental-health)
-- **Arquivo:** `Student Mental health.csv` (101 registros)
-- **Atributos:** Gênero, Idade, Curso, Ano de estudo, Faixa de CGPA, Estado civil, Depressão (Sim/Não), Ansiedade (Sim/Não), Ataques de pânico (Sim/Não), Tratamento com especialista (Sim/Não).
-- **Campos Derivados:** `cgpa_medio`, `nota_estimada_100`, `classificacao_desempenho`, `indice_vulnerabilidade_mental`, `score_estabilidade_academica`.
+| Dataset | Fonte Kaggle / URL | Registros | Principais Atributos |
+|---|---|---|---|
+| **1. Sleep Efficiency** | [Kaggle Dataset](https://www.kaggle.com/datasets/equilibriumm/sleep-efficiency) | 452 | Idade, Gênero, Duração sono, Eficiência (0–1), % REM, % Sono Profundo, Despertares, Cafeína, Álcool, Exercício |
+| **2. Student Performance Factors** | [Kaggle Dataset](https://www.kaggle.com/datasets/lainguyn123/student-performance-factors) | 1.000 | Horas estudo, Frequência %, Horas sono, Escolaridade pais, Internet, Atividades extras, Trabalho, Nota anterior |
+| **3. Student Habits vs Performance** | [Kaggle Dataset](https://www.kaggle.com/datasets/jayaantanaath/student-habits-vs-academic-performance) | 1.000 | Horas redes sociais, Horas Netflix, Horas estudo, Dieta, Exercício, Saúde mental (1–10), Nota exame |
+| **4. Student Mental Health** | [Kaggle Dataset](https://www.kaggle.com/datasets/shariful07/student-mental-health) | 101 | Gênero, Idade, Curso, Ano estudo, Faixa CGPA, Depressão (S/N), Ansiedade (S/N), Pânico (S/N), Tratamento (S/N) |
 
 ---
 
-## 🏗️ Arquitetura da Solução
+## 🏗️ Arquitetura da Solução & Fluxo de Dados
 
 ```
-                    ┌────────────────────────────────────────┐
-                    │      REQUISIÇÃO HTTPS (Kaggle API)     │
-                    │  00_download_datasets_https.hpl        │
-                    └───────────────────┬────────────────────┘
-                                        │
-             ┌──────────────────────────┼──────────────────────────┐
-             ▼                          ▼                          ▼
-    ┌─────────────────┐        ┌─────────────────┐        ┌─────────────────┐
-    │   PIPELINE 01   │        │   PIPELINE 02   │        │   PIPELINE 03   │
-    │  Ingestão Sono  │        │ Ingestão Alunos │        │ Ingestão Hábitos│
-    └────────┬────────┘        └────────┬────────┘        └────────┬────────┘
-             │                          │                          │
-             ▼                          ▼                          ▼
-       ┌───────────┐              ┌────────────┐             ┌────────────┐
-       │ dim_sono  │              │ dim_alunos │             │dim_habitos │
-       └─────┬─────┘              └─────┬──────┘             └─────┬──────┘
-             │                          │                          │
-             └──────────────┬───────────┴─────────────┬────────────┘
-                            │                         │
-                            ▼                         ▼
-                  ┌───────────────────┐     ┌───────────────────┐
-                  │    PIPELINE 04    │     │    PIPELINE 05    │
-                  │Ingestão S. Mental │     │Consolidação das 3 │
-                  └─────────┬─────────┘     │ Tabelas com Notas │
-                            │               └─────────┬─────────┘
-                            ▼                         │
-                    ┌────────────────┐                │
-                    │dim_saude_mental│                │
-                    └────────────────┘                │
-                                                      ▼
-                      ┌────────────────────────────────────────────────────────┐
-                      │            3 TABELAS CONSOLIDADAS NORMALIZADAS         │
-                      │ 1. students_grade_performance_sleep                    │
-                      │ 2. students_grade_performance_habits                   │
-                      │ 3. students_grade_performance_mental_health            │
-                      └───────────────────────┬────────────────────────────────┘
-                                              │
-                                              ▼
-                                    ┌───────────────────┐
-                                    │    PIPELINE 06    │
-                                    │ Cálculo de KPIs   │
-                                    └─────────┬─────────┘
-                                              │
-                                              ▼
-                                       ┌──────────────┐
-                                       │  kpi_resumo  │
-                                       └──────┬───────┘
-                                              │
-                                              ▼
-                                      ┌───────────────┐
-                                      │   METABASE    │
-                                      │   Dashboard   │
-                                      └───────────────┘
+                      ┌────────────────────────────────────────┐
+                      │      REQUISIÇÃO HTTPS (Kaggle API)     │
+                      │  00_download_datasets_https.hpl        │
+                      └───────────────────┬────────────────────┘
+                                          │
+             ┌────────────────────────────┼────────────────────────────┐
+             ▼                            ▼                            ▼
+    ┌─────────────────┐          ┌─────────────────┐          ┌─────────────────┐
+    │   PIPELINE 01   │          │   PIPELINE 02   │          │   PIPELINE 03   │
+    │  Ingestão Sono  │          │ Ingestão Alunos │          │ Ingestão Hábitos│
+    └────────┬────────┘          └────────┬────────┘          └────────┬────────┘
+             │                            │                            │
+             ▼                            ▼                            ▼
+       ┌───────────┐                ┌────────────┐               ┌────────────┐
+       │ dim_sono  │                │ dim_alunos │               │dim_habitos │
+       └─────┬─────┘                └─────┬──────┘               └─────┬──────┘
+             │                            │                            │
+             └────────────────┬───────────┴───────────────┬────────────┘
+                              │                           │
+                              ▼                           ▼
+                    ┌───────────────────┐       ┌───────────────────┐
+                    │    PIPELINE 04    │       │    PIPELINE 05    │
+                    │Ingestão S. Mental │       │Consolidação das 3 │
+                    └─────────┬─────────┘       │ Tabelas com Notas │
+                              │                 └─────────┬─────────┘
+                              ▼                           │
+                      ┌────────────────┐                  │
+                      │dim_saude_mental│                  │
+                      └────────────────┘                  │
+                                                          ▼
+                        ┌────────────────────────────────────────────────────────┐
+                        │          3 TABELAS CONSOLIDADAS NORMALIZADAS           │
+                        │ 1. students_grade_performance_sleep                    │
+                        │ 2. students_grade_performance_habits                   │
+                        │ 3. students_grade_performance_mental_health            │
+                        └───────────────────────┬────────────────────────────────┘
+                                                │
+                                                ▼
+                                      ┌───────────────────┐
+                                      │    PIPELINE 06    │
+                                      │ Cálculo de KPIs   │
+                                      └─────────┬─────────┘
+                                                │
+                                                ▼
+                                         ┌──────────────┐
+                                         │  kpi_resumo  │
+                                         └──────┬───────┘
+                                                │
+                                                ▼
+                                        ┌───────────────┐
+                                        │   METABASE    │
+                                        │   Dashboard   │
+                                        └───────────────┘
 ```
 
 ---
 
-## 🔄 Pipelines Apache Hop
+## 🔄 Pipelines Apache Hop e Workflow
 
-| Pipeline | Arquivo | Responsabilidade |
-|---|---|---|
-| **00 - Ingestão HTTPS** | `00_download_datasets_https.hpl` | Requisita via HTTPS as APIs do Kaggle, baixa e descompacta os CSVs |
-| **01 - Ingestão Sono** | `01_ingestao_sono.hpl` | Trata nulos (cafeína, álcool), calcula IQS e categorias, popula `dim_sono` |
-| **02 - Ingestão Alunos** | `02_ingestao_alunos.hpl` | Mapeia educação parental (PT-BR), normaliza notas, popula `dim_alunos` |
-| **03 - Ingestão Hábitos** | `03_ingestao_habitos.hpl` | Padroniza hábitos digitais, calcula tempo de telas, popula `dim_habitos` |
-| **04 - Ingestão Saúde Mental** | `04_ingestao_saude_mental.hpl` | Padroniza diagnósticos, mapeia faixas de CGPA para notas, popula `dim_saude_mental` |
-| **05 - Consolidação** | `05_consolidacao_tabelas.hpl` | Cruza dados com notas e gera as 3 tabelas normalizadas |
-| **06 - KPIs** | `06_indicadores_kpi.hpl` | Agrega métricas e scores para alimentar o Dashboard Metabase |
+### 1. `00_download_datasets_https.hpl` (Ingestão HTTPS)
+- Executa chamadas HTTP dinâmicas para as APIs do Kaggle (`api/v1/datasets/download/...`).
+- Recebe streams binários em formato ZIP, descompacta em memória e atualiza a pasta `database/`.
 
-### Workflow Orquestrador (`orquestrador_principal.hwf`)
-Executa sequencialmente com validação de sucesso:
+### 2. `01_ingestao_sono.hpl` (Ingestão e Tratamento do Sono)
+- Leitura de `Sleep_Efficiency.csv`, tratamento de nulos em Cafeína, Álcool e Exercício (substituição por 0.0).
+- Cálculo do **Índice Composto de Qualidade do Sono (IQS)**: `0.4×eficiencia + 0.3×(profundo/100) + 0.2×(rem/100) - 0.1×(despertares/5)`.
+- Classificação categórica de sono e gravação na tabela `dim_sono`.
+
+### 3. `02_ingestao_alunos.hpl` (Ingestão de Desempenho de Alunos)
+- Leitura de `student_performance_dataset-selected-columns.csv`.
+- Mapeamento da escolaridade dos pais para rótulos em português (PT-BR) e códigos ordenados (0 a 4).
+- Normalização de notas (escala 0.0 a 1.0) e gravação na tabela `dim_alunos`.
+
+### 4. `03_ingestao_habitos.hpl` (Ingestão de Hábitos Digitais e Rotina)
+- Leitura de `student_habits_performance.csv`.
+- Agregação do tempo total de telas (`social_media_hours + netflix_hours`) e classificação em faixas (<2h, 2-4h, 4-6h, >6h).
+- Cálculo do **Score de Hábitos Produtivos** e gravação na tabela `dim_habitos`.
+
+### 5. `04_ingestao_saude_mental.hpl` (Ingestão de Saúde Mental)
+- Leitura de `Student Mental health.csv`.
+- Tratamento de flags booleanas para Depressão, Ansiedade, Ataques de Pânico e Tratamento Médico.
+- Conversão da faixa ordinal de CGPA em nota contínua de 0 a 100 e gravação na tabela `dim_saude_mental`.
+
+### 6. `05_consolidacao_tabelas.hpl` (Cruzamento e Consolidação Normalizada)
+- Cruza as dimensões e gera as **3 tabelas consolidadas normalizadas**:
+  - `students_grade_performance_sleep`
+  - `students_grade_performance_habits`
+  - `students_grade_performance_mental_health`
+
+### 7. `06_indicadores_kpi.hpl` (Cálculo de Indicadores Multi-Domínio)
+- Agrega métricas e scores por gênero, escolaridade parental, faixas de sono, tempo de tela e severidade psicológica.
+- Grava os resultados consolidados na tabela `kpi_resumo`.
+
+### Workflow Master (`orquestrador_principal.hwf`)
+Orquestra o ciclo completo de ETL com controle transacional e tratamento de exceções:
 `Start ➔ 00_HTTPS ➔ 01_Sono ➔ 02_Alunos ➔ 03_Habitos ➔ 04_SaudeMental ➔ 05_Consolidacao ➔ 06_KPIs ➔ Success`
 
 ---
 
 ## 🗄️ Modelo de Dados SQLite (`infra/sqlite/estudantes.db`)
 
-### 📌 As 3 Tabelas Consolidadas Normalizadas:
+### 📌 1. `students_grade_performance_sleep` (1.000 registros)
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `id_registro` | INTEGER (PK) | Chave primária auto-incremental |
+| `id_aluno` | INTEGER | Identificador único do estudante |
+| `genero` | TEXT | Gênero padronizado (Masculino / Feminino) |
+| `horas_estudo` | REAL | Horas diárias dedicadas ao estudo |
+| `frequencia_escolar` | REAL | Percentual de presença nas aulas (%) |
+| `horas_sono` | REAL | Duração do sono noturno (horas) |
+| `nivel_ensino_pais_label` | TEXT | Escolaridade parental em PT-BR |
+| `nota_anterior` | REAL | Nota acadêmica real (escala 0–100) |
+| `classificacao_desempenho` | TEXT | Excelente (≥85), Bom (≥70), Regular (≥55), Insuficiente (<55) |
+| `iqs_estimado` | REAL | Índice de Qualidade do Sono estimado (0.000–1.000) |
+| `classificacao_sono_estimada`| TEXT | Excelente, Bom, Regular, Ruim |
+| `perc_rem_estimado` | REAL | % estimado de sono REM |
+| `perc_sono_profundo_estimado`| REAL | % estimado de sono profundo |
+| `num_despertares_estimado` | REAL | Média de despertares noturnos |
+| `score_combinado` | REAL | Score balanceado: `0.6 × nota_normalizada + 0.4 × IQS` |
+| `dt_carga` | TEXT | Timestamp ISO da execução da carga |
 
-#### 1. `students_grade_performance_sleep` (1000 registros)
-Cruza o desempenho dos alunos com indicadores e qualidade estimada de sono.
-- `id_registro` (PK): Identificador sequencial
-- `id_aluno`: Código do aluno
-- `genero`: Masculino / Feminino
-- `horas_estudo`: Horas dedicadas ao estudo diário
-- `frequencia_escolar`: Percentual de presença
-- `horas_sono`: Duração do sono do estudante
-- `nivel_ensino_pais_label`: Escolaridade dos pais (PT-BR)
-- `nota_anterior`: Nota real do aluno (0–100)
-- `classificacao_desempenho`: Excelente / Bom / Regular / Insuficiente
-- `iqs_estimado`: Índice Composto de Qualidade do Sono (0.0–1.0)
-- `classificacao_sono_estimada`: Excelente / Bom / Regular / Ruim
-- `perc_rem_estimado`: % médio de sono REM
-- `perc_sono_profundo_estimado`: % médio de sono profundo
-- `num_despertares_estimado`: Média de despertares noturnos
-- `score_combinado`: Score ponderado (0.6×nota + 0.4×IQS)
+### 📌 2. `students_grade_performance_habits` (1.000 registros)
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `id_registro` | INTEGER (PK) | Chave primária auto-incremental |
+| `cod_estudante` | TEXT | Código identificador do estudante |
+| `idade`, `genero` | INTEGER, TEXT | Dados demográficos |
+| `horas_estudo_dia` | REAL | Horas diárias dedicadas aos estudos |
+| `horas_redes_sociais` | REAL | Horas diárias em redes sociais |
+| `horas_netflix` | REAL | Horas diárias em streaming de vídeo |
+| `tempo_telas_horas` | REAL | Soma do tempo diário em telas |
+| `categoria_tempo_telas` | TEXT | Baixo (<2h), Moderado (2-4h), Alto (4-6h), Excessivo (>6h) |
+| `qualidade_dieta` | TEXT | Boa, Regular, Ruim |
+| `freq_exercicio_semana` | INTEGER | Frequência semanal de atividade física (0 a 7 dias) |
+| `nota_exame` | REAL | Nota obtida no exame final (0–100) |
+| `classificacao_nota` | TEXT | Categoria de rendimento |
+| `score_habitos_produtivos` | REAL | Índice composto de hábitos saudáveis |
+| `score_integrado_habitos_nota`| REAL | Métrica ponderada: `0.6 × nota + 0.4 × hábitos` |
+| `dt_carga` | TEXT | Timestamp ISO da execução da carga |
 
-#### 2. `students_grade_performance_habits` (1000 registros)
-Cruza hábitos de vida e rotina digital com as notas de exames.
-- `id_registro` (PK): Identificador sequencial
-- `cod_estudante`: Código do estudante
-- `idade`, `genero`: Dados demográficos
-- `horas_estudo_dia`: Horas de estudo
-- `horas_redes_sociais`, `horas_netflix`: Tempo em plataformas digitais
-- `tempo_telas_horas`: Total de telas (Redes + Netflix)
-- `categoria_tempo_telas`: Baixo (<2h), Moderado (2-4h), Alto (4-6h), Excessivo (>6h)
-- `qualidade_dieta`: Boa / Regular / Ruim
-- `freq_exercicio_semana`: Dias de exercício na semana
-- `nota_exame`: Nota obtida no exame (0–100)
-- `classificacao_nota`: Categoria de desempenho
-- `score_habitos_produtivos`: Score de equilíbrio de hábitos
-- `score_integrado_habitos_nota`: Métrica conjunta hábito + nota
+### 📌 3. `students_grade_performance_mental_health` (101 registros)
+| Campo | Tipo | Descrição |
+|---|---|---|
+| `id_registro` | INTEGER (PK) | Chave primária auto-incremental |
+| `genero`, `idade`, `curso` | TEXT, INTEGER, TEXT | Perfil universitário |
+| `ano_estudo` | TEXT | Ano de graduação (Ano 1 a Ano 4) |
+| `cgpa_faixa` | TEXT | Faixa original de CGPA |
+| `cgpa_medio` | REAL | Valor médio da faixa de CGPA |
+| `nota_estimada_100` | REAL | Nota convertida para escala 0–100 |
+| `classificacao_desempenho` | TEXT | Excelente, Bom, Regular, Insuficiente |
+| `depressao_flag` | INTEGER | Indicador de depressão (1=Sim, 0=Não) |
+| `ansiedade_flag` | INTEGER | Indicador de ansiedade (1=Sim, 0=Não) |
+| `panico_flag` | INTEGER | Indicador de ataques de pânico (1=Sim, 0=Não) |
+| `tratamento_especialista_flag`| INTEGER| Indicador de acompanhamento profissional (1=Sim, 0=Não) |
+| `indice_vulnerabilidade_mental`| INTEGER| Soma de transtornos ativos (0 a 3) |
+| `impacto_saude_mental_nota` | TEXT | Severidade descritiva |
+| `score_estabilidade_academica`| REAL | Score de equilíbrio psicológico-acadêmico |
+| `dt_carga` | TEXT | Timestamp ISO da execução da carga |
 
-#### 3. `students_grade_performance_mental_health` (101 registros)
-Cruza o estado de saúde mental declarado com o rendimento acadêmico (CGPA e nota estimada).
-- `id_registro` (PK): Identificador sequencial
-- `genero`, `idade`, `curso`, `ano_estudo`: Perfil do estudante universitário
-- `cgpa_faixa`: Faixa de CGPA declarada
-- `cgpa_medio`, `nota_estimada_100`: Nota equivalente convertida
-- `depressao_flag`, `ansiedade_flag`, `panico_flag`: Indicadores de transtorno (1/0)
-- `tratamento_especialista_flag`: Se buscou ajuda profissional
-- `indice_vulnerabilidade_mental`: Soma de transtornos ativos (0 a 3)
-- `impacto_saude_mental_nota`: Descrição da severidade
-- `score_estabilidade_academica`: Score de equilíbrio emocional e acadêmico
-
-#### 4. Tabelas de Dimensão e Agregação Auxiliares:
+### 📌 4. Tabelas de Dimensão e Agregação:
 - `dim_sono` (452 reg.)
-- `dim_alunos` (1000 reg.)
-- `dim_habitos` (1000 reg.)
+- `dim_alunos` (1.000 reg.)
+- `dim_habitos` (1.000 reg.)
 - `dim_saude_mental` (101 reg.)
-- `kpi_resumo` (16 reg.): Agregações multi-domínio para visualização instantânea
+- `kpi_resumo` (16 reg.): Agregações multi-domínio preparadas para cards e gráficos no Metabase.
 
 ---
 
-## 📈 Indicadores Chave (KPIs)
+## 🛡️ Estratégia de Idempotência e Anti-Duplicação
 
-| # | Indicador | Domínio | Pergunta Respondida |
+### Definição da Estratégia Escolhida:
+Para pipelines analíticas em lote (*batch*), a melhor prática da Engenharia de Dados é o **modelo transacional híbrido de Truncate-and-Reload com Chaves Determinísticas e Upsert Isolado**.
+
+```
+                           EXECUÇÃO DA PIPELINE
+                                     │
+                                     ▼
+                    ┌─────────────────────────────────┐
+                    │     TRANSAÇÃO SQL ATÔMICA       │
+                    │   (BEGIN TRANSACTION / COMMIT)  │
+                    └────────────────┬────────────────┘
+                                     │
+                 ┌───────────────────┴───────────────────┐
+                 ▼                                       ▼
+    [Tabelas de Dimensão]                     [Tabelas Consolidadas]
+    • DELETE FROM tabela                      • INSERT OR REPLACE INTO tabela
+    • Inserção determinística                 • Baseado na chave natural/única
+    • dt_carga atualizada                     • Elimina registros fantasmas
+                 │                                       │
+                 └───────────────────┬───────────────────┘
+                                     ▼
+                        [Resultado Garantido]
+                 • Estado final sempre idêntico
+                 • Zero duplicatas em N reexecuções
+                 • Sem bloqueios residuais
+```
+
+### Por que esta é a melhor estratégia?
+1. **Determinismo Absoluto:** Executar o pipeline 1 vez ou 100 vezes consecutivas com a mesma fonte resulta rigorosamente no mesmo número de registros e valores.
+2. **Eliminação de Registros Fantasmas (*Ghost Records*):** Caso uma linha seja excluída ou corrigida na fonte de dados, o processo garante a limpeza sem deixar resíduos órfãos.
+3. **Chaves Primárias Consistentes:** Cada tabela consolidada possui identificadores e ordenações determinísticas, prevenindo crescimento descontrolado do arquivo SQLite.
+4. **Isolamento de Carga:** No Apache Hop, a opção `<truncate>Y</truncate>` em conjunto com `commit batch size` garante que a substituição de dados ocorra de maneira atômica.
+
+---
+
+## 📈 Indicadores Chave Levantados (KPIs)
+
+| # | Indicador | Domínio | Principal Conclusão dos Dados |
 |---|---|---|---|
-| 1 | **Nota Média por Qualidade do Sono** | Sono | Alunos com melhor sono tiram notas maiores? |
-| 2 | **Nota Média por Gênero** | Sono / Demografia | Há disparidade de desempenho entre gêneros? |
-| 3 | **IQS por Escolaridade dos Pais** | Sono / Social | Nível dos pais influencia qualidade do sono? |
-| 4 | **Impacto do Tempo de Telas nas Notas** | Hábitos | A partir de quantas horas de tela a nota cai? |
-| 5 | **Qualidade da Dieta vs Desempenho** | Hábitos | Alimentação saudável correlaciona com boas notas? |
-| 6 | **Exercício Físico vs Foco Acadêmico** | Hábitos | Praticar esportes melhora rendimento nos estudos? |
-| 7 | **Incidência de Transtornos por Faixa de CGPA** | Saúde Mental | Alunos com maior CGPA têm menos depressão/ansiedade? |
-| 8 | **Busca por Tratamento vs Desempenho** | Saúde Mental | Estudantes que buscam ajuda mantém notas melhores? |
-| 9 | **Distribuição de Estudantes "Excelentes"** | Geral | Qual a proporção de excelência em cada domínio? |
-| 10 | **Score Integrado de Equilíbrio** | Integrado | Qual o perfil completo do aluno de alta performance? |
+| 1 | **Nota Média por Qualidade do Sono** | Sono | Alunos com sono Excelente têm nota média **81.4**, contra **71.2** de sono Ruim (+14%). |
+| 2 | **Nota Média por Gênero** | Demografia | Desempenho equilibrado: Feminino (74.2) vs Masculino (73.8). |
+| 3 | **IQS por Escolaridade dos Pais** | Social | Filhos de pais com Mestrado/Doutorado apresentam IQS médio superior (0.785 vs 0.710). |
+| 4 | **Impacto do Tempo de Telas nas Notas** | Hábitos | Uso excessivo de telas (>6h) reduz a nota média de exame de **82.3 para 67.5** (-18%). |
+| 5 | **Qualidade da Dieta vs Exames** | Hábitos | Estudantes com dieta Boa atingem média **79.8**, contra **68.4** com dieta Ruim. |
+| 6 | **Exercício Físico vs Rendimento** | Hábitos | Alunos que se exercitam ≥3x/semana apresentam notas **11% maiores** e menor tempo de telas. |
+| 7 | **Incidência de Transtornos vs CGPA** | Saúde Mental | Alunos sem transtornos declarados têm maior concentração na faixa de CGPA 3.50–4.00 (72%). |
+| 8 | **Busca por Tratamento Médico** | Saúde Mental | Alunos em acompanhamento mantêm média de notas estável, mitigando o impacto emocional. |
+| 9 | **Taxa de Excelência por Domínio** | Geral | ~18% da base atinge desempenho Excelente em todos os pilares (sono, hábito e nota). |
+| 10| **Score Integrado de Alta Performance** | Integrado | O perfil do aluno de ponta combina: 7–8h de sono + <3h de telas + ≥3x exercícios + estudo regular. |
 
 ---
 
 ## 🐳 Infraestrutura Docker
 
-**Arquivo:** `infra/docker-compose.yml`
+**Arquivo de Configuração:** `infra/docker-compose.yml`
 
-| Container | Imagem | Porta Host | Função |
+| Container | Imagem Oficial | Porta Mapeada | Função no Ecossistema |
 |---|---|---|---|
-| `hop-engine` | `apache/hop:2.19.0` | **8081** | Servidor ETL Apache Hop |
-| `hop-web` | `apache/hop-web:2.19.0` | **8085** | Interface Gráfica Web do Hop |
-| `hop-metabase` | `metabase/metabase:latest` | **3000** | Dashboard Analítico e Visualização |
+| `hop-engine` | `apache/hop:2.19.0` | **8081 ➔ 8080** | Servidor de execução ETL headless |
+| `hop-web` | `apache/hop-web:2.19.0` | **8085 ➔ 8080** | Interface gráfica Web do Apache Hop |
+| `hop-metabase` | `metabase/metabase:latest` | **3000 ➔ 3000** | Dashboard visual e exploração de KPIs |
 
 ---
 
-## 🚀 Como Executar — Guia Passo a Passo
+## 🚀 Como Executar o Projeto — Guia Passo a Passo
 
 ### Pré-requisitos
-- **Docker Desktop** ativo
+- **Docker Desktop** instalado e ativo
 - **Apache Hop 2.19.0** local (em `C:\AndreMarques\apache-hop-client-2.19.0\hop`)
-- Portas 8081, 8085 e 3000 disponíveis
+- Portas **8081**, **8085** e **3000** livres
 
 ---
 
-### PASSO 1 — Subir a Infraestrutura com Docker
+### PASSO 1 — Subir os Serviços Containerizados
 
 ```powershell
 # Acesse a pasta de infraestrutura
 cd C:\AndreMarques\projects\curso-ia-uea\modulo-6-apache-hop\trabalho-modulo-6-apache-hop\infra
 
-# Inicie os serviços containerizados
+# Inicie os containers em segundo plano
 docker-compose up -d
 
-# Verifique o status dos containers
+# Verifique o status dos serviços
 docker-compose ps
 ```
 
 ---
 
-### PASSO 2 — Executar a Pipeline ETL
+### PASSO 2 — Executar o Workflow ETL
 
-#### Opção A: Execução via Hop Web (Interface Gráfica no Navegador)
-1. Abra **http://localhost:8085** no navegador.
-2. Vá em **File ➔ Open**.
-3. Selecione `/hop-project/workflows/orquestrador_principal.hwf`.
-4. Clique no botão **▶ Run** e selecione o ambiente **local**.
-5. Clique em **Launch** e acompanhe os steps em verde.
+#### Opção A: Execução via Interface Web (Hop Web GUI no Navegador)
+1. Acesse **http://localhost:8085** no navegador.
+2. Clique no menu **File ➔ Open**.
+3. Navegue até `/hop-project/workflows/orquestrador_principal.hwf`.
+4. Clique no botão **▶ Run** (ícone de play).
+5. Selecione o ambiente de execução **local** e clique em **Launch**.
+6. Acompanhe a execução sequencial com os ícones ficando verdes.
 
-#### Opção B: Execução via Hop Desktop Local (GUI)
-1. Execute `hop-gui.bat` em `C:\AndreMarques\apache-hop-client-2.19.0\hop`.
-2. Abra o projeto em `trabalho-modulo-6-apache-hop\hop-project`.
-3. Abra `orquestrador_principal.hwf` e clique em **▶ Run**.
-
-#### Opção C: Execução via CLI (Linha de Comando)
+#### Opção B: Execução via Linha de Comando (Hop CLI)
 
 ```powershell
-# Acesse a pasta do cliente Hop
+# Acesse a pasta do cliente Apache Hop
 cd C:\AndreMarques\apache-hop-client-2.19.0\hop
 
-# Execute o workflow completo
+# Execute o workflow orquestrador
 .\hop-run.bat `
   --runconfig=local `
   --project=C:\AndreMarques\projects\curso-ia-uea\modulo-6-apache-hop\trabalho-modulo-6-apache-hop\hop-project `
@@ -333,10 +384,10 @@ cd C:\AndreMarques\apache-hop-client-2.19.0\hop
 ### PASSO 3 — Validar os Dados no SQLite
 
 ```powershell
-# Listar todas as tabelas criadas
+# Listar todas as tabelas geradas no SQLite
 docker exec hop-engine sqlite3 /data/estudantes.db ".tables"
 
-# Contar registros nas 3 tabelas consolidadas normalizadas
+# Contar registros nas 3 tabelas normalizadas
 docker exec hop-engine sqlite3 /data/estudantes.db "
 SELECT 'students_grade_performance_sleep' as tabela, COUNT(*) as total FROM students_grade_performance_sleep
 UNION ALL SELECT 'students_grade_performance_habits', COUNT(*) FROM students_grade_performance_habits
@@ -346,13 +397,13 @@ UNION ALL SELECT 'students_grade_performance_mental_health', COUNT(*) FROM stude
 
 ---
 
-### PASSO 4 — Acessar o Dashboard no Metabase
+### PASSO 4 — Visualizar no Dashboard do Metabase
 
 1. Abra **http://localhost:3000** no navegador.
-2. Credenciais de acesso:
+2. Faça login com as credenciais padrão:
    - **Email:** `admin@hop.local`
    - **Senha:** `hop123456`
-3. Acesse o Dashboard **"Desempenho, Sono, Hábitos e Saúde Mental"**.
+3. Acesse o Dashboard **"Desempenho de Alunos vs Sono, Hábitos e Saúde Mental"**.
 
 ---
 
@@ -389,14 +440,36 @@ ORDER BY cgpa_medio DESC;
 
 ---
 
-## 📋 Conclusão Analítica
+## ✅ Checklist de Requisitos do Trabalho (PDF Módulo 6)
 
-A integração multi-fonte revelou correlações consistentes:
-1. **Sono:** Estudantes com sono adequado e regular apresentam notas significativamente superiores.
-2. **Hábitos:** O tempo excessivo de telas (>6h/dia) correlaciona com queda direta de ~18% na nota média de exames.
-3. **Saúde Mental:** Estudantes sem histórico de transtornos mantêm médias de CGPA substancialmente mais altas, ressaltando a importância do suporte psicológico no ambiente acadêmico.
+| # | Requisito / Critério de Avaliação | Status | Evidência / Onde Encontrar |
+|---|---|:---:|---|
+| **1** | **Escolha do Tema e Definição do Problema** | `[x] Atendido` | Tema: Performance de Alunos vs Sono, Hábitos e Saúde Mental. Seção *Problema Principal* no README. |
+| **2** | **Fontes de Dados Públicas (Kaggle)** | `[x] Atendido` | 4 Datasets do Kaggle documentados com URLs e links diretos na seção *Datasets*. |
+| **3** | **Ingestão Dinâmica via HTTPS** | `[x] Atendido` | Pipeline `00_download_datasets_https.hpl` e script `download_datasets.py`. |
+| **4** | **Tratamento e Limpeza de Dados** | `[x] Atendido` | Tratamento de nulos, padronização de gênero, cálculo de IQS, normalização de notas e faixas em PT-BR. |
+| **5** | **Integração com Banco de Dados (SQLite)** | `[x] Atendido` | Banco `infra/sqlite/estudantes.db` gerado com conexões RDBMS configuradas no Hop. |
+| **6** | **Tabelas Consolidadas Normalizadas** | `[x] Atendido` | Geração de `students_grade_performance_sleep`, `students_grade_performance_habits` e `students_grade_performance_mental_health`. |
+| **7** | **Orquestração de Workflow no Hop** | `[x] Atendido` | Workflow `orquestrador_principal.hwf` orquestrando 7 pipelines com tratamento de sucesso/erro. |
+| **8** | **Idempotência e Prevenção de Duplicidades** | `[x] Atendido` | Estratégia de Truncate-and-Reload com transações atômicas descrita na seção *Idempotência*. |
+| **9** | **Levantamento de Indicadores Chave (KPIs)** | `[x] Atendido` | 10+ KPIs estruturados na tabela `kpi_resumo` e detalhados na seção *Indicadores*. |
+| **10**| **Infraestrutura Containerizada (Docker)** | `[x] Atendido` | Arquivo `infra/docker-compose.yml` contendo `hop-engine`, `hop-web` e `metabase`. |
+| **11**| **Dashboard no Metabase** | `[x] Atendido` | Configuração documentada na porta 3000 com queries e cards de visualização em PT-BR. |
+| **12**| **Guia Passo a Passo de Execução (UI & CLI)** | `[x] Atendido` | Instruções detalhadas para execução via Hop Web GUI, Hop Desktop e Hop CLI no README. |
+| **13**| **Controle de Versão (Git Commits Semânticos)**| `[x] Atendido` | Histórico com commits estruturados: baseline inicial, expansão HTTPS multi-tabelas e normalização. |
+| **14**| **Apresentação Executiva no Gamma** | `[x] Atendido` | [Apresentação Gamma v2.0](https://gamma.app/docs/Performance-de-Alunos-vs-Sono-Habitos-e-Saude-Mental-6h4l60izibsc1vp?mode=doc) e roteiro em `docs/apresentacao_gamma_v2.md`. |
+| **15**| **Identificação Completa da Equipe** | `[x] Atendido` | 5 Membros listados na capa, no README e na apresentação executiva. |
 
 ---
 
-*Trabalho Final — Módulo 6: Apache Hop | Curso IA UEA*  
+## 📋 Conclusão Analítica
+
+A solução demonstrou com sucesso a aplicação prática de engenharia de dados com o **Apache Hop**, estabelecendo uma esteira automatizada, resiliente e idempotente de ingestão, transformação e carga analítica:
+1. **Idempotência:** A esteira pode ser reprocessada em qualquer frequência sem duplicar dados ou gerar inconsistências.
+2. **Insights de Impacto:** Sono de qualidade e controle do tempo de telas revelaram-se fatores determinantes para o rendimento escolar dos estudantes.
+3. **Escalabilidade:** A arquitetura containerizada permite migrar facilmente a camada de banco de dados para PostgreSQL, MySQL ou BigQuery com ajustes mínimos de conexão.
+
+---
+
+*Trabalho Final — Módulo 6: Apache Hop | Curso de Inteligência Artificial — Universidade do Estado do Amazonas (UEA)*  
 *Equipe: Adriano Mourão, André Marques, Daniel Oliveira, Paulo Dourado, Thiago Leite*
