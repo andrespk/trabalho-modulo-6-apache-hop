@@ -26,6 +26,6 @@
   </transform>
   <transform>
     <name>Extrair ZIP e Salvar CSVs</name>
-    <type>ScriptValue</type>
+    <type>Dummy</type>
   </transform>
 </pipeline>

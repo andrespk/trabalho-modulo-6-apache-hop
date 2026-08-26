@@ -13,11 +13,11 @@
   </order>
   <transform>
     <name>Ler student_habits_performance.csv</name>
-    <type>CSVFileInput</type>
+    <type>CsvInput</type>
     <filename>${PROJECT_HOME}/../database/student_habits_performance.csv</filename>
     <separator>,</separator><enclosure>"</enclosure><header>Y</header>
   </transform>
-  <transform><name>Padronizar Habitos e Dieta</name><type>ValueMeta</type></transform>
+  <transform><name>Padronizar Habitos e Dieta</name><type>SelectValues</type></transform>
   <transform><name>Calcular Indices de Habito</name><type>Calculator</type></transform>
   <transform>
     <name>Gravar dim_habitos SQLite</name>

@@ -8,10 +8,18 @@ services:
       - HOP_SERVER_USER=cluster
       - HOP_SERVER_PASS=cluster
       - HOP_SERVER_PORT=8080
+      - HOP_PROJECT_NAME=hop-project
+      - HOP_PROJECT_DIRECTORY=/files/hop-project
+      - HOP_PROJECT_FOLDER=/files/hop-project
+      - HOP_PROJECT_CONFIG_FILE=/files/hop-project/project-config.json
+      - HOP_ENVIRONMENT_NAME=local
+      - HOP_ENVIRONMENT_CONFIG_FILE=/files/hop-project/project-config.json
+      - HOP_LOG_LEVEL=Basic
     volumes:
-      - ./sqlite:/data
-      - ../database:/database
-      - ../hop-project:/hop-project
+      - ../:/files
+      - ./sqlite:/files/infra/sqlite
+      - ../database:/files/database
+      - ../hop-project:/files/hop-project
       - hop_plugins:/opt/hop/plugins
     networks:
       - hop-network
@@ -24,10 +32,18 @@ services:
     container_name: hop-web
     environment:
       - HOP_AES_ENCRYPTION_KEY=HopUEA2024SecretKey
+      - HOP_PROJECT_NAME=hop-project
+      - HOP_PROJECT_DIRECTORY=/files/hop-project
+      - HOP_PROJECT_FOLDER=/files/hop-project
+      - HOP_PROJECT_CONFIG_FILE=/files/hop-project/project-config.json
+      - HOP_ENVIRONMENT_NAME=local
+      - HOP_ENVIRONMENT_CONFIG_FILE=/files/hop-project/project-config.json
+      - HOP_LOG_LEVEL=Basic
     volumes:
-      - ./sqlite:/data
-      - ../database:/database
-      - ../hop-project:/hop-project
+      - ../:/files
+      - ./sqlite:/files/infra/sqlite
+      - ../database:/files/database
+      - ../hop-project:/files/hop-project
       - hop_web_config:/root/.hop
     networks:
       - hop-network
@@ -48,7 +64,7 @@ services:
     networks:
       - hop-network
     ports:
-      - "3000:3000"
+      - "3001:3000"
     restart: unless-stopped
 
 volumes:

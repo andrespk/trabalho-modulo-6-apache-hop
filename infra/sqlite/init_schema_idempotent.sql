@@ -1,3 +1,6 @@
+PRAGMA journal_mode = WAL;
+PRAGMA synchronous = NORMAL;
+
 -- =====================================================================
 -- SCRIPT DDL DE INICIALIZACAO IDEMPOTENTE DO BANCO DE DADOS
 -- Banco: estudantes.db (SQLite 3)

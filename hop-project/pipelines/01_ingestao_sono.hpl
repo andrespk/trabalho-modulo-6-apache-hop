@@ -36,7 +36,7 @@
   </order>
   <transform>
     <name>Ler CSV Sleep_Efficiency</name>
-    <type>CSVFileInput</type>
+    <type>CsvInput</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -79,7 +79,7 @@
   </transform>
   <transform>
     <name>Tratar Nulos e Padronizar</name>
-    <type>ValueMeta</type>
+    <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>

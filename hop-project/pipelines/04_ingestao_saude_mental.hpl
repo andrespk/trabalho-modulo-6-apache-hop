@@ -13,11 +13,11 @@
   </order>
   <transform>
     <name>Ler Student Mental health.csv</name>
-    <type>CSVFileInput</type>
+    <type>CsvInput</type>
     <filename>${PROJECT_HOME}/../database/Student Mental health.csv</filename>
     <separator>,</separator><enclosure>"</enclosure><header>Y</header>
   </transform>
-  <transform><name>Padronizar Diagnosticos</name><type>ValueMeta</type></transform>
+  <transform><name>Padronizar Diagnosticos</name><type>SelectValues</type></transform>
   <transform><name>Converter Faixa CGPA para Nota</name><type>Calculator</type></transform>
   <transform>
     <name>Gravar dim_saude_mental SQLite</name>

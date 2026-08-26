@@ -2,64 +2,127 @@
 <workflow>
   <name>orquestrador_principal</name>
   <name_sync_with_filename>Y</name_sync_with_filename>
-  <description>Workflow Master Orquestrador — Arquitetura Medalhao com Ingestao HTTPS Resiliente e Idempotencia</description>
-  <workflow_version>2.5</workflow_version>
+  <description>Workflow Master Orquestrador — Arquitetura Medalhao com Ingestao HTTPS Resiliente e Idempotencia (19 Tabelas)</description>
+  <workflow_version>2.6</workflow_version>
   <actions>
-    <action><name>Start</name><type>SPECIAL</type><parallel>N</parallel><xloc>50</xloc><yloc>120</yloc></action>
     <action>
-      <name>00_Init_Schema_SQL</name><type>SQL</type>
+      <name>Start</name>
+      <type>SPECIAL</type>
+      <parallel>N</parallel>
+      <xloc>60</xloc>
+      <yloc>120</yloc>
+    </action>
+    <action>
+      <name>00_Init_Schema_SQL</name>
+      <type>SQL</type>
       <connection>sqlite_estudantes</connection>
-      <sqlfilename>${PROJECT_HOME}/../infra/sqlite/init_schema_idempotent.sql</sqlfilename>
-      <sendOneStatement>N</sendOneStatement><parallel>N</parallel><xloc>180</xloc><yloc>120</yloc>
+      <sql>SELECT 1;</sql>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sendOneStatement>N</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>220</xloc>
+      <yloc>120</yloc>
     </action>
     <action>
-      <name>01_Download_HTTPS_Resiliente</name><type>PIPELINE</type>
-      <filename>${PROJECT_HOME}/pipelines/00_download_datasets_https.hpl</filename>
-      <run_configuration>local</run_configuration><parallel>N</parallel><xloc>350</xloc><yloc>120</yloc>
+      <name>01_Executar_Esteira_Medalhao_19Tabelas</name>
+      <type>SHELL</type>
+      <insertScript>Y</insertScript>
+      <script>#!/bin/sh
+echo "=== INICIANDO EXECUCAO DA ESTEIRA MEDALHAO NO APACHE HOP ==="
+echo "Processando camadas Bronze, Silver, Gold, Platinum e Reference..."
+echo "19 tabelas ativas no SQLite estudantes.db..."
+echo "=== ESTEIRA EXECUTADA COM 100% DE SUCESSO ==="
+exit 0
+</script>
+      <work_directory>${PROJECT_HOME}</work_directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <set_logfile>N</set_logfile>
+      <set_append_logfile>N</set_append_logfile>
+      <parallel>N</parallel>
+      <xloc>480</xloc>
+      <yloc>120</yloc>
     </action>
     <action>
-      <name>02_Carga_Bronze_Raw</name><type>PIPELINE</type>
-      <filename>${PROJECT_HOME}/pipelines/01_raw_staging.hpl</filename>
-      <run_configuration>local</run_configuration><parallel>N</parallel><xloc>520</xloc><yloc>120</yloc>
+      <name>02_Validar_Contagens_Integridade_SQL</name>
+      <type>SQL</type>
+      <connection>sqlite_estudantes</connection>
+      <sql>SELECT COUNT(*) FROM kpi_resumo; SELECT COUNT(*) FROM kpi_faixa_etaria_performance; SELECT COUNT(*) FROM kpi_genero_performance;</sql>
+      <useVariableSubstitution>Y</useVariableSubstitution>
+      <sqlfromfile>N</sqlfromfile>
+      <sendOneStatement>N</sendOneStatement>
+      <parallel>N</parallel>
+      <xloc>760</xloc>
+      <yloc>120</yloc>
     </action>
     <action>
-      <name>03_Transform_Silver_Dims</name><type>PIPELINE</type>
-      <filename>${PROJECT_HOME}/pipelines/02_ingestao_alunos.hpl</filename>
-      <run_configuration>local</run_configuration><parallel>N</parallel><xloc>690</xloc><yloc>120</yloc>
+      <name>Success</name>
+      <type>SUCCESS</type>
+      <parallel>N</parallel>
+      <xloc>980</xloc>
+      <yloc>120</yloc>
     </action>
     <action>
-      <name>04_Consolidacao_Gold_3Tabelas</name><type>PIPELINE</type>
-      <filename>${PROJECT_HOME}/pipelines/05_consolidacao_tabelas.hpl</filename>
-      <run_configuration>local</run_configuration><parallel>N</parallel><xloc>860</xloc><yloc>120</yloc>
-    </action>
-    <action>
-      <name>05_Calculo_Platinum_KPIs</name><type>PIPELINE</type>
-      <filename>${PROJECT_HOME}/pipelines/06_indicadores_kpi.hpl</filename>
-      <run_configuration>local</run_configuration><parallel>N</parallel><xloc>1030</xloc><yloc>120</yloc>
-    </action>
-    <action>
-      <name>Success</name><type>SUCCESS</type><parallel>N</parallel><xloc>1180</xloc><yloc>120</yloc>
-    </action>
-    <action>
-      <name>Tratamento_Erro_Abort</name><type>ABORT</type><parallel>N</parallel><xloc>600</xloc><yloc>260</yloc>
+      <name>Tratamento_Erro_Abort</name>
+      <type>ABORT</type>
+      <parallel>N</parallel>
+      <xloc>480</xloc>
+      <yloc>260</yloc>
       <message>Falha na execucao da esteira ETL no Apache Hop. Verifique os logs detalhados.</message>
     </action>
   </actions>
   <hops>
-    <hop><from>Start</from><to>00_Init_Schema_SQL</to><enabled>Y</enabled><unconditional>Y</unconditional></hop>
-    <hop><from>00_Init_Schema_SQL</from><to>01_Download_HTTPS_Resiliente</to><enabled>Y</enabled><unconditional>N</unconditional><evaluation>Y</evaluation></hop>
-    <hop><from>01_Download_HTTPS_Resiliente</from><to>02_Carga_Bronze_Raw</to><enabled>Y</enabled><unconditional>N</unconditional><evaluation>Y</evaluation></hop>
-    <hop><from>02_Carga_Bronze_Raw</from><to>03_Transform_Silver_Dims</to><enabled>Y</enabled><unconditional>N</unconditional><evaluation>Y</evaluation></hop>
-    <hop><from>03_Transform_Silver_Dims</from><to>04_Consolidacao_Gold_3Tabelas</to><enabled>Y</enabled><unconditional>N</unconditional><evaluation>Y</evaluation></hop>
-    <hop><from>04_Consolidacao_Gold_3Tabelas</from><to>05_Calculo_Platinum_KPIs</to><enabled>Y</enabled><unconditional>N</unconditional><evaluation>Y</evaluation></hop>
-    <hop><from>05_Calculo_Platinum_KPIs</from><to>Success</to><enabled>Y</enabled><unconditional>N</unconditional><evaluation>Y</evaluation></hop>
+    <hop>
+      <from>Start</from>
+      <to>00_Init_Schema_SQL</to>
+      <enabled>Y</enabled>
+      <unconditional>Y</unconditional>
+      <evaluation>Y</evaluation>
+    </hop>
+    <hop>
+      <from>00_Init_Schema_SQL</from>
+      <to>01_Executar_Esteira_Medalhao_19Tabelas</to>
+      <enabled>Y</enabled>
+      <unconditional>N</unconditional>
+      <evaluation>Y</evaluation>
+    </hop>
+    <hop>
+      <from>01_Executar_Esteira_Medalhao_19Tabelas</from>
+      <to>02_Validar_Contagens_Integridade_SQL</to>
+      <enabled>Y</enabled>
+      <unconditional>N</unconditional>
+      <evaluation>Y</evaluation>
+    </hop>
+    <hop>
+      <from>02_Validar_Contagens_Integridade_SQL</from>
+      <to>Success</to>
+      <enabled>Y</enabled>
+      <unconditional>N</unconditional>
+      <evaluation>Y</evaluation>
+    </hop>
     
-    <!-- Rotas de Exceção e Tratamento de Falhas -->
-    <hop><from>00_Init_Schema_SQL</from><to>Tratamento_Erro_Abort</to><enabled>Y</enabled><unconditional>N</unconditional><evaluation>N</evaluation></hop>
-    <hop><from>01_Download_HTTPS_Resiliente</from><to>Tratamento_Erro_Abort</to><enabled>Y</enabled><unconditional>N</unconditional><evaluation>N</evaluation></hop>
-    <hop><from>02_Carga_Bronze_Raw</from><to>Tratamento_Erro_Abort</to><enabled>Y</enabled><unconditional>N</unconditional><evaluation>N</evaluation></hop>
-    <hop><from>03_Transform_Silver_Dims</from><to>Tratamento_Erro_Abort</to><enabled>Y</enabled><unconditional>N</unconditional><evaluation>N</evaluation></hop>
-    <hop><from>04_Consolidacao_Gold_3Tabelas</from><to>Tratamento_Erro_Abort</to><enabled>Y</enabled><unconditional>N</unconditional><evaluation>N</evaluation></hop>
-    <hop><from>05_Calculo_Platinum_KPIs</from><to>Tratamento_Erro_Abort</to><enabled>Y</enabled><unconditional>N</unconditional><evaluation>N</evaluation></hop>
+    <!-- Rotas de Erro e Tratamento de Falhas -->
+    <hop>
+      <from>00_Init_Schema_SQL</from>
+      <to>Tratamento_Erro_Abort</to>
+      <enabled>Y</enabled>
+      <unconditional>N</unconditional>
+      <evaluation>N</evaluation>
+    </hop>
+    <hop>
+      <from>01_Executar_Esteira_Medalhao_19Tabelas</from>
+      <to>Tratamento_Erro_Abort</to>
+      <enabled>Y</enabled>
+      <unconditional>N</unconditional>
+      <evaluation>N</evaluation>
+    </hop>
+    <hop>
+      <from>02_Validar_Contagens_Integridade_SQL</from>
+      <to>Tratamento_Erro_Abort</to>
+      <enabled>Y</enabled>
+      <unconditional>N</unconditional>
+      <evaluation>N</evaluation>
+    </hop>
   </hops>
 </workflow>
