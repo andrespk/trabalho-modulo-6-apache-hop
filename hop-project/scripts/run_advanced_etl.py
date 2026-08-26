@@ -1,10 +1,14 @@
+#!/usr/bin/env python3
 import os
+import sys
 import sqlite3
 import pandas as pd
 import numpy as np
 import datetime
 
-base_dir = r"C:\AndreMarques\projects\curso-ia-uea\modulo-6-apache-hop\trabalho-modulo-6-apache-hop"
+# Detectar dinamicamente o root do projeto (funciona tanto no Windows quanto no Docker /files)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+base_dir = os.path.abspath(os.path.join(script_dir, "..", ".."))
 database_dir = os.path.join(base_dir, "database")
 infra_dir = os.path.join(base_dir, "infra")
 sqlite_dir = os.path.join(infra_dir, "sqlite")
