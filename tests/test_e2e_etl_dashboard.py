@@ -77,7 +77,7 @@ expected_tables = {
     "dim_sono": 452, "dim_alunos": 1000, "dim_habitos": 1000, "dim_saude_mental": 101,
     "students_grade_performance_sleep": 1000, "students_grade_performance_habits": 1000, "students_grade_performance_mental_health": 101,
     "kpi_resumo": 16, "kpi_eficiencia_estudo": 12, "kpi_risco_academico": 4, "kpi_resiliencia_habitos": 4, "kpi_curso_saude_mental": 15,
-    "ref_kpi_normalidade": 10, "kpi_faixa_etaria_performance": 3
+    "ref_kpi_normalidade": 10, "kpi_faixa_etaria_performance": 3, "kpi_genero_performance": 2
 }
 try:
     conn = sqlite3.connect(db_path)
@@ -89,10 +89,10 @@ try:
         if cnt != exp_count:
             table_errors.append(f"{tbl}: esperado {exp_count}, encontrado {cnt}")
     passed = (len(table_errors) == 0)
-    log_test("Teste 03: Validação de Integridade e Contagens nas 18 Tabelas", passed, "Todas as 18 tabelas validadas com contagens exatas." if passed else f"Erros: {table_errors}")
+    log_test("Teste 03: Validação de Integridade e Contagens nas 19 Tabelas", passed, "Todas as 19 tabelas validadas com contagens exatas." if passed else f"Erros: {table_errors}")
     conn.close()
 except Exception as e:
-    log_test("Teste 03: Validação de Integridade e Contagens nas 18 Tabelas", False, str(e))
+    log_test("Teste 03: Validação de Integridade e Contagens nas 19 Tabelas", False, str(e))
 
 # TESTE 4: Idempotência
 try:
@@ -148,7 +148,7 @@ try:
         page.wait_for_selector(".grid-kpis")
         page.wait_for_selector("#donutSonoChart")
         page.wait_for_selector("#radarPerfilChart")
-        page.wait_for_selector("#barRoiChart")
+        page.wait_for_selector("#barGenderChart")
         time.sleep(1.0)
         cards_count = page.locator(".card-kpi").count()
         charts_count = page.locator("canvas").count()

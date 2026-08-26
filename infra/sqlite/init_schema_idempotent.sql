@@ -206,4 +206,28 @@ CREATE TABLE kpi_faixa_etaria_performance (
     dt_carga TEXT NOT NULL
 );
 
+
+DROP TABLE IF EXISTS kpi_genero_performance;
+CREATE TABLE kpi_genero_performance (
+    id_kpi INTEGER PRIMARY KEY AUTOINCREMENT,
+    genero TEXT NOT NULL,
+    total_estudantes INTEGER NOT NULL,
+    nota_media REAL NOT NULL,
+    nota_exame_media REAL NOT NULL,
+    media_horas_estudo REAL NOT NULL,
+    media_tempo_telas REAL NOT NULL,
+    media_horas_sono REAL NOT NULL,
+    media_iqs_sono REAL NOT NULL,
+    media_eficiencia_sono REAL NOT NULL,
+    media_sono_profundo REAL NOT NULL,
+    freq_exercicio_semana REAL NOT NULL,
+    cgpa_medio REAL NOT NULL,
+    taxa_depressao_pct REAL NOT NULL,
+    taxa_ansiedade_pct REAL NOT NULL,
+    taxa_panico_pct REAL NOT NULL,
+    taxa_busca_tratamento_pct REAL NOT NULL,
+    score_equilibrio_geral REAL NOT NULL,
+    dt_carga TEXT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_kpi_dominio ON kpi_resumo(dominio);

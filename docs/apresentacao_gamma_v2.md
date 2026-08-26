@@ -16,7 +16,7 @@
 
 ### Slide 1: Visão Geral & Problema Central
 - **Problema Analítico:** Qual o impacto combinado do sono, dos hábitos digitais/telas e da saúde mental no desempenho acadêmico (notas e CGPA)?
-- **Objetivo do Projeto:** Construir uma esteira ETL completa no **Apache Hop** que ingere múltiplas fontes (inclusive via requisições HTTPS à API do Kaggle), limpa, enriquece, normaliza e correlaciona os dados em um banco **SQLite containerizado** com 18 tabelas, integrando valores referenciais em **Excel**, dashboard no **Metabase** e validação com **Playwright E2E**.
+- **Objetivo do Projeto:** Construir uma esteira ETL completa no **Apache Hop** que ingere múltiplas fontes (inclusive via requisições HTTPS à API do Kaggle), limpa, enriquece, normaliza e correlaciona os dados em um banco **SQLite containerizado** com 19 tabelas, integrando valores referenciais em **Excel**, dashboard no **Metabase** e validação com **Playwright E2E**.
 
 ---
 
@@ -83,6 +83,7 @@
 - **ROI do Estudo:** Alunos descansados produzem **18.4 pts/hora de estudo** vs **12.1 pts/hora** dos privados de sono (+52% de eficiência).
 - **Matriz de Risco:** Grupo em Risco Crítico (>5h telas + <6h sono + trabalho parcial) tem **42.8% de taxa de reprovação**.
 - **Fator de Resiliência:** Prática regular de exercícios (≥3x/sem) eleva as notas em **+11.2 pontos**.
+- **Insights por Sexo (Feminino vs Masculino):** Notas equilibradas (69.8 pts F vs 69.6 pts M); mulheres buscam quase o dobro de acompanhamento psicológico (6.7% vs 3.8%), sustentando CGPA superior (3.41 vs 3.21).
 - **Maturidade por Idade (Calouros vs Veteranos):** Estudantes mais velhos (23-25+ anos) atingem nota média superior (75.8 pts) e maior autorregulação (0.659) contra calouros de 18-19 anos.
 - **Vulnerabilidade por Curso:** Cursos de Exatas/Tecnologia apresentam taxa declarada de ansiedade superior (48.3%) em relação a Humanas (34.1%).
 
@@ -104,7 +105,7 @@
 - **100% de Aprovação (6/6 Testes Aprovados):**
   * Teste 1: Ingestão HTTPS Resiliente com retries e fallback.
   * Teste 2: Execução completa da pipeline ETL Apache Hop.
-  * Teste 3: Integridade e contagens exatas das 18 tabelas.
+  * Teste 3: Integridade e contagens exatas das 19 tabelas.
   * Teste 4: Garantia de Idempotência estrita (reprocessamento 2x sem duplicatas).
   * Teste 5: Regras de Qualidade de Dados e validação das 10 normas de baseline.
   * Teste 6: Renderização e validação de interface do Dashboard no Playwright com screenshots.

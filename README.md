@@ -42,7 +42,7 @@ Para facilitar a interpretação dos indicadores levantados pela esteira de dado
 | **Módulo** | Módulo 6 — Engenharia de Dados & Apache Hop |
 | **Tema do Trabalho** | Performance Acadêmica vs Qualidade do Sono, Hábitos Digitais e Saúde Mental |
 | **Ferramenta ETL** | Apache Hop Client / Server versão 2.19.0 |
-| **Banco de Dados** | SQLite 3 (18 tabelas ativas em volume persistente containerizado) |
+| **Banco de Dados** | SQLite 3 (19 tabelas ativas em volume persistente containerizado) |
 | **Planilha de Referência** | `database/valores_referenciais_kpi.xlsx` (Ingerida na tabela `ref_kpi_normalidade`) |
 | **Dashboard BI** | Metabase v0.49+ (containerizado via Docker) |
 | **Testes Automatizados** | Playwright E2E Suite (100% de Aprovação em 6 testes) |
@@ -157,7 +157,7 @@ A esteira de dados inclui a planilha oficial [valores_referenciais_kpi.xlsx](fil
 
 ---
 
-## 🗄️ Modelo de Dados SQLite (18 Tabelas Populadas)
+## 🗄️ Modelo de Dados SQLite (19 Tabelas Populadas)
 
 ### 📌 Camada de Referência:
 - `ref_kpi_normalidade` (10 registros com baselines de normalidade)
@@ -202,6 +202,35 @@ A análise por idade dos discentes permitiu identificar o **Efeito de Maturidade
 
 ---
 
+### 5. 👥 Insights Comparativos por Sexo / Gênero (Feminino vs Masculino)
+
+O cruzamento multidimensional das bases permitiu traçar um panorama comparativo aprofundado entre estudantes do sexo **Feminino** e **Masculino**:
+
+| Dimensão / Indicador Analisado | Feminino | Masculino | Variação / Diagnóstico |
+|---|:---:|:---:|---|
+| **Nota Média Anterior (0 a 100)** | **69.83 pts** | 69.65 pts | `Equilíbrio Notável (+0.18 pts F)` |
+| **Nota Média de Exame (0 a 100)** | **69.74 pts** | 69.37 pts | `Equilíbrio (+0.37 pts F)` |
+| **CGPA Médio Universitário (0 a 4.00)** | **3.41** | 3.21 | `Superior no Feminino (+0.20 pts)` |
+| **Horas Diárias de Estudo** | **3.58h/dia** | 3.51h/dia | `Similaridade de dedicação` |
+| **Tempo Total de Telas de Entretenimento** | **4.30h/dia** | 4.32h/dia | `Consumo digital idêntico (2.5h redes + 1.8h netflix)` |
+| **Duração Média do Sono** | **6.81h/noite** | 6.79h/noite | `Ambos na faixa de alerta (<7.0h)` |
+| **Eficiência Real do Sono** | 78.3% | **79.5%** | `Leve vantagem Masculina (+1.2%)` |
+| **Percentual de Sono Profundo (N3)** | 51.8% | **53.3%** | `Leve vantagem Masculina (+1.5%)` |
+| **Frequência de Exercícios Físicos** | 2.91 dias/sem | **3.19 dias/sem** | `Superior no Masculino (+9.6%)` |
+| **Taxa Declarada de Depressão** | **38.7%** | 23.1% | `Maior prevalência reportada no Feminino` |
+| **Taxa Declarada de Ansiedade** | 32.0% | **38.5%** | `Maior prevalência reportada no Masculino` |
+| **Taxa Declarada de Ataques de Pânico** | **33.3%** | 30.8% | `Prevalência similar (+2.5% F)` |
+| **Busca por Tratamento Psicológico** | **6.7%** | 3.8% | `Feminino busca quase o dobro de suporte (+76%)` |
+
+---
+
+#### 💡 Principais Percepções Analíticas por Sexo:
+1. **Paridade Acadêmica e Disciplina Digital:** Tanto alunas quanto alunos dedicam aproximadamente $3.55	ext{h/dia}$ aos estudos e mantêm consumo idêntico de telas de entretenimento ($4.3	ext{h/dia}$), resultando em notas de exames praticamente idênticas.
+2. **Diferenças no Perfil de Saúde Mental:** O público feminino reporta maior incidência de episódios depressivos ($38.7\%$), enquanto o público masculino apresenta maior propensão a sintomas ansiosos ($38.5\%$).
+3. **Fator Protetivo da Busca por Ajuda:** Estudantes do sexo feminino buscam suporte psicológico profissional com frequência **76% maior** ($6.7\%$ vs $3.8\%$), fator determinante para manter seu CGPA médio universitário mais elevado (**3.41** vs **3.21**), mesmo enfrentando maiores níveis de estresse emocional.
+
+---
+
 ## 💡 Percepções e Conclusões dos Indicadores Levantados
 
 A análise aprofundada dos dados e dos KPIs consolidados permitiu identificar padrões e conclusões de alto valor para o domínio educacional:
@@ -239,7 +268,7 @@ python tests/test_e2e_etl_dashboard.py
 =====================================================================
 [PASS] Teste 01: Ingestão HTTPS Resiliente (Kaggle APIs) - Download com retry e fallback concluído.
 [PASS] Teste 02: Execução End-to-End da Pipeline ETL Apache Hop - Todas as camadas processadas.
-[PASS] Teste 03: Validação de Integridade e Contagens nas 18 Tabelas - 18 tabelas validadas.
+[PASS] Teste 03: Validação de Integridade e Contagens nas 19 Tabelas - 19 tabelas validadas.
 [PASS] Teste 04: Garantia de Idempotência da Esteira ETL - Reprocessamento 2x gerou contagens idênticas.
 [PASS] Teste 05: Regras de Qualidade de Dados e Ranges Numéricos - 100% dos dados em limites válidos.
 [PASS] Teste 06: Renderização e Visualização de Dashboard com Playwright - 4 cards e 4 tabelas validados.
@@ -353,7 +382,7 @@ Todas as formas de execução descritas abaixo produzem **rigorosamente o mesmo 
 
 ### 1. Iniciar os Containers da Infraestrutura (Docker)
 ```powershell
-cd C:\AndreMarques\projects\curso-ia-uea\modulo-6-apache-hop\trabalho-modulo-6-apache-hop\infra
+cd infra
 docker-compose up -d
 ```
 > Os containers `hop-engine` (porta 8081), `hop-web` (porta 8085) e `hop-metabase` (porta 3000) iniciarão com o volume SQLite compartilhado.
@@ -386,10 +415,10 @@ docker exec -it hop-engine /opt/hop/hop-run.sh \
 #### 🔹 Opção C: Execução via Linha de Comando no Cliente Hop Local (Windows CLI)
 Caso utilize a instalação local do Apache Hop Client:
 ```powershell
-cd C:\AndreMarques\apache-hop-client-2.19.0\hop
+cd /opt/hop-client (ou diretório de instalação do Hop)
 .\hop-run.bat `
   --runconfig=local `
-  --project=C:\AndreMarques\projects\curso-ia-uea\modulo-6-apache-hop\trabalho-modulo-6-apache-hop\hop-project `
+  --project=hop-project `
   --file=workflows\orquestrador_principal.hwf
 ```
 
@@ -425,6 +454,7 @@ Independentemente de executar via **UI Web**, **Container CLI** ou **Script E2E*
 | `kpi_resiliencia_habitos` | Platinum (KPIs) | **4** | `[PASS] 100% Íntegro` |
 | `kpi_curso_saude_mental` | Platinum (KPIs) | **15** | `[PASS] 100% Íntegro` |
 | `kpi_faixa_etaria_performance` | Platinum (KPIs) | **3** | `[PASS] 100% Íntegro` |
+| `kpi_genero_performance` | Platinum (KPIs) | **2** | `[PASS] 100% Íntegro` |
 
 ---
 
