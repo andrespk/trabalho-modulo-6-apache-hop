@@ -3,30 +3,56 @@
   <name>orquestrador_principal</name>
   <name_sync_with_filename>Y</name_sync_with_filename>
   <description>Workflow Master Orquestrador — Arquitetura Medalhao com Ingestao HTTPS Resiliente e Idempotencia (19 Tabelas)</description>
+  <created_user>-</created_user>
+  <modified_user>-</modified_user>
+  <created_date>2026/08/26 21:01:51.256</created_date>
+  <modified_date>2026/08/26 21:01:51.256</modified_date>
   <workflow_version>2.6</workflow_version>
+  <parameters/>
   <actions>
     <action>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>60</intervalMinutes>
+      <DayOfMonth>1</DayOfMonth>
+      <weekDay>1</weekDay>
+      <minutes>0</minutes>
+      <hour>12</hour>
+      <doNotWaitOnFirstExecution>N</doNotWaitOnFirstExecution>
       <name>Start</name>
+      <description/>
       <type>SPECIAL</type>
+      <attributes/>
+      <xloc>48</xloc>
+      <yloc>112</yloc>
       <parallel>N</parallel>
-      <xloc>60</xloc>
-      <yloc>120</yloc>
+      <attributes_hac/>
     </action>
     <action>
-      <name>00_Init_Schema_SQL</name>
-      <type>SQL</type>
-      <connection>sqlite_estudantes</connection>
       <sql>SELECT 1;</sql>
+      <connection>sqlite_estudantes</connection>
       <useVariableSubstitution>Y</useVariableSubstitution>
       <sqlfromfile>N</sqlfromfile>
       <sendOneStatement>N</sendOneStatement>
-      <parallel>N</parallel>
+      <name>00_Init_Schema_SQL</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
       <xloc>220</xloc>
       <yloc>120</yloc>
+      <parallel>N</parallel>
+      <attributes_hac/>
     </action>
     <action>
-      <name>01_Executar_Esteira_Medalhao_19Tabelas</name>
-      <type>SHELL</type>
+      <work_directory>${PROJECT_HOME}</work_directory>
+      <arguments/>
+      <arg_from_previous>N</arg_from_previous>
+      <set_logfile>N</set_logfile>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <exec_per_row>N</exec_per_row>
+      <set_append_logfile>N</set_append_logfile>
       <insertScript>Y</insertScript>
       <script>#!/bin/sh
 echo "=== INICIANDO EXECUCAO DA ESTEIRA MEDALHAO NO APACHE HOP ==="
@@ -35,94 +61,103 @@ echo "19 tabelas ativas no SQLite estudantes.db..."
 echo "=== ESTEIRA EXECUTADA COM 100% DE SUCESSO ==="
 exit 0
 </script>
-      <work_directory>${PROJECT_HOME}</work_directory>
-      <arg_from_previous>N</arg_from_previous>
-      <exec_per_row>N</exec_per_row>
-      <set_logfile>N</set_logfile>
-      <set_append_logfile>N</set_append_logfile>
-      <parallel>N</parallel>
+      <name>01_Executar_Esteira_Medalhao_19Tabelas</name>
+      <type>SHELL</type>
+      <attributes/>
       <xloc>480</xloc>
-      <yloc>120</yloc>
+      <yloc>112</yloc>
+      <parallel>N</parallel>
+      <attributes_hac/>
     </action>
     <action>
-      <name>02_Validar_Contagens_Integridade_SQL</name>
-      <type>SQL</type>
-      <connection>sqlite_estudantes</connection>
       <sql>SELECT COUNT(*) FROM kpi_resumo; SELECT COUNT(*) FROM kpi_faixa_etaria_performance; SELECT COUNT(*) FROM kpi_genero_performance;</sql>
+      <connection>sqlite_estudantes</connection>
       <useVariableSubstitution>Y</useVariableSubstitution>
       <sqlfromfile>N</sqlfromfile>
       <sendOneStatement>N</sendOneStatement>
-      <parallel>N</parallel>
+      <name>02_Validar_Contagens_Integridade_SQL</name>
+      <description/>
+      <type>SQL</type>
+      <attributes/>
       <xloc>760</xloc>
       <yloc>120</yloc>
+      <parallel>N</parallel>
+      <attributes_hac/>
     </action>
     <action>
       <name>Success</name>
+      <description/>
       <type>SUCCESS</type>
-      <parallel>N</parallel>
+      <attributes/>
       <xloc>980</xloc>
       <yloc>120</yloc>
+      <parallel>N</parallel>
+      <attributes_hac/>
     </action>
     <action>
+      <message>Falha na execucao da esteira ETL no Apache Hop. Verifique os logs detalhados.</message>
+      <loglevel>Error</loglevel>
       <name>Tratamento_Erro_Abort</name>
+      <description/>
       <type>ABORT</type>
-      <parallel>N</parallel>
+      <attributes/>
       <xloc>480</xloc>
       <yloc>260</yloc>
-      <message>Falha na execucao da esteira ETL no Apache Hop. Verifique os logs detalhados.</message>
+      <parallel>N</parallel>
+      <attributes_hac/>
     </action>
   </actions>
   <hops>
     <hop>
       <from>Start</from>
       <to>00_Init_Schema_SQL</to>
-      <enabled>Y</enabled>
-      <unconditional>Y</unconditional>
       <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>00_Init_Schema_SQL</from>
       <to>01_Executar_Esteira_Medalhao_19Tabelas</to>
-      <enabled>Y</enabled>
-      <unconditional>N</unconditional>
       <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>01_Executar_Esteira_Medalhao_19Tabelas</from>
       <to>02_Validar_Contagens_Integridade_SQL</to>
-      <enabled>Y</enabled>
-      <unconditional>N</unconditional>
       <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>02_Validar_Contagens_Integridade_SQL</from>
       <to>Success</to>
-      <enabled>Y</enabled>
-      <unconditional>N</unconditional>
       <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+      <enabled>Y</enabled>
     </hop>
-    
-    <!-- Rotas de Erro e Tratamento de Falhas -->
     <hop>
       <from>00_Init_Schema_SQL</from>
       <to>Tratamento_Erro_Abort</to>
-      <enabled>Y</enabled>
-      <unconditional>N</unconditional>
       <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>01_Executar_Esteira_Medalhao_19Tabelas</from>
       <to>Tratamento_Erro_Abort</to>
-      <enabled>Y</enabled>
-      <unconditional>N</unconditional>
       <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+      <enabled>Y</enabled>
     </hop>
     <hop>
       <from>02_Validar_Contagens_Integridade_SQL</from>
       <to>Tratamento_Erro_Abort</to>
-      <enabled>Y</enabled>
-      <unconditional>N</unconditional>
       <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+      <enabled>Y</enabled>
     </hop>
   </hops>
+  <notepads/>
+  <attributes/>
 </workflow>
