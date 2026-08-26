@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+  <info>
+    <name>03_ingestao_habitos</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description>Pipeline de ingestao e tratamento de habitos de estudantes</description>
+    <pipeline_type>Normal</pipeline_type>
+  </info>
+  <order>
+    <hop><from>Ler student_habits_performance.csv</from><to>Padronizar Habitos e Dieta</to><enabled>Y</enabled></hop>
+    <hop><from>Padronizar Habitos e Dieta</from><to>Calcular Indices de Habito</to><enabled>Y</enabled></hop>
+    <hop><from>Calcular Indices de Habito</from><to>Gravar dim_habitos SQLite</to><enabled>Y</enabled></hop>
+  </order>
+  <transform>
+    <name>Ler student_habits_performance.csv</name>
+    <type>CSVFileInput</type>
+    <filename>${PROJECT_HOME}/../database/student_habits_performance.csv</filename>
+    <separator>,</separator><enclosure>"</enclosure><header>Y</header>
+  </transform>
+  <transform><name>Padronizar Habitos e Dieta</name><type>ValueMeta</type></transform>
+  <transform><name>Calcular Indices de Habito</name><type>Calculator</type></transform>
+  <transform>
+    <name>Gravar dim_habitos SQLite</name>
+    <type>TableOutput</type>
+    <connection>sqlite_estudantes</connection>
+    <table>dim_habitos</table><truncate>Y</truncate>
+  </transform>
+</pipeline>

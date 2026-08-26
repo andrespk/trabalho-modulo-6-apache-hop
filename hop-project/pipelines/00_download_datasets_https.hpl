@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+  <info>
+    <name>00_download_datasets_https</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description>Pipeline de requisicao HTTPS para download dos datasets Kaggle</description>
+    <pipeline_type>Normal</pipeline_type>
+  </info>
+  <order>
+    <hop><from>Gerar URLs Kaggle</from><to>Requisicao HTTPS Client</to><enabled>Y</enabled></hop>
+    <hop><from>Requisicao HTTPS Client</from><to>Extrair ZIP e Salvar CSVs</to><enabled>Y</enabled></hop>
+  </order>
+  <transform>
+    <name>Gerar URLs Kaggle</name>
+    <type>RowGenerator</type>
+    <fields>
+      <field><name>url_habits</name><type>String</type><nullif>https://www.kaggle.com/api/v1/datasets/download/jayaantanaath/student-habits-vs-academic-performance</nullif></field>
+      <field><name>url_mental_health</name><type>String</type><nullif>https://www.kaggle.com/api/v1/datasets/download/shariful07/student-mental-health</nullif></field>
+    </fields>
+    <limit>1</limit>
+  </transform>
+  <transform>
+    <name>Requisicao HTTPS Client</name>
+    <type>HTTP</type>
+    <url_field>url_habits</url_field>
+  </transform>
+  <transform>
+    <name>Extrair ZIP e Salvar CSVs</name>
+    <type>ScriptValue</type>
+  </transform>
+</pipeline>
