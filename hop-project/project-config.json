@@ -1,0 +1,21 @@
+{
+  "metadataBaseFolder": "${PROJECT_HOME}/metadata",
+  "unitTestsBasePath": "${PROJECT_HOME}",
+  "dataSetsCsvFolder": "${PROJECT_HOME}/datasets",
+  "enforcingExecutionInHome": true,
+  "parentProjectName": "default",
+  "config": {
+    "variables": [
+      {
+        "name": "DATABASE_DIR",
+        "value": "${PROJECT_HOME}/../database",
+        "description": "Pasta de dados CSV"
+      },
+      {
+        "name": "SQLITE_DB_PATH",
+        "value": "${PROJECT_HOME}/../infra/sqlite/estudantes.db",
+        "description": "Arquivo do banco SQLite"
+      }
+    ]
+  }
+}

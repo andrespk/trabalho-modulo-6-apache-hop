@@ -1,0 +1,12 @@
+# Logs & Temporarios
+*.log
+logs/
+.DS_Store
+Thumbs.db
+
+# Dados locais do Metabase
+infra/metabase/*
+!infra/metabase/.gitkeep
+
+# Dados do SQLite (apenas banco gerado pode ser recriado via ETL)
+# infra/sqlite/*.db
