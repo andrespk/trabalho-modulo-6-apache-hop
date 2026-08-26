@@ -299,6 +299,26 @@ Compara os estudantes de **Alto Desempenho ($	ext{Nota} \ge 85$)** com os de **R
 
 ---
 
+## 📸 Evidências Visuais do Dashboard no Metabase
+
+Abaixo estão apresentadas as capturas reais do painel analítico no Metabase (e renderizadas nos testes E2E Playwright):
+
+### 1. Visão Geral do Dashboard Completo (KPIs, Donuts, Radar, Barras e Tabelas)
+![Dashboard Metabase Completo](docs/images/metabase_dashboard_e2e.png)
+
+---
+
+### 2. Destaque: Gráficos de Donuts e Perfil Multidimensional (Radar)
+![Gráficos de Donuts e Radar](docs/images/charts_donuts_radar.png)
+
+---
+
+### 3. Destaque: Cards Executivos de Indicadores Chave (KPIs)
+![Cards de KPIs](docs/images/kpi_cards_preview.png)
+
+
+---
+
 ## 🐳 Infraestrutura Docker
 
 **Arquivo:** `infra/docker-compose.yml`
