@@ -1,6 +1,6 @@
 {
   "name": "sqlite_estudantes",
-  "description": "Conex\u00e3o SQLite com a base consolidada de estudantes",
+  "description": "Conex\u00e3o SQLite com a base de dados de estudantes",
   "rdbms": {
     "SQLITE": {
       "databaseName": "/files/infra/sqlite/estudantes.db",
@@ -17,11 +17,10 @@
         "SUPPORTS_BOOLEAN_DATA_TYPE": "Y",
         "FORCE_IDENTIFIERS_TO_LOWERCASE": "N",
         "PRESERVE_RESERVED_WORD_CASE": "Y",
-        "SQL_CONNECT": "PRAGMA journal_mode = WAL;",
         "FORCE_IDENTIFIERS_TO_UPPERCASE": "N",
         "PREFERRED_SCHEMA_NAME": ""
       },
-      "manualUrl": ""
+      "manualUrl": "jdbc:sqlite:/files/infra/sqlite/estudantes.db"
     }
   }
 }

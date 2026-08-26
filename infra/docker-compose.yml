@@ -30,6 +30,7 @@ services:
   hop-web:
     image: apache/hop-web:2.19.0
     container_name: hop-web
+    user: "0:0"
     environment:
       - HOP_AES_ENCRYPTION_KEY=HopUEA2024SecretKey
       - HOP_PROJECT_NAME=hop-project

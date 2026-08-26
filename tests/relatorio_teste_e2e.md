@@ -1,7 +1,7 @@
 # 🧪 Relatório Oficial de Testes End-to-End (E2E) — Playwright
 **Projeto:** Performance de Alunos vs Sono, Hábitos e Saúde Mental  
 **Módulo:** 6 — Apache Hop (Pós-Graduação IA UEA)  
-**Data/Hora da Execução:** 2026-08-26 17:28:47  
+**Data/Hora da Execução:** 2026-08-26 18:05:22  
 **Taxa de Sucesso:** 6/6 (100% de Aprovação)
 
 ---

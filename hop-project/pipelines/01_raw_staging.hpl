@@ -3,191 +3,136 @@
   <info>
     <name>01_raw_staging</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
-    <description>Carga Raw / Staging das 4 fontes de dados</description>
+    <description>Ingestao Nativa Bronze de todos os Datasets</description>
     <pipeline_type>Normal</pipeline_type>
   </info>
   <order>
-    <hop><from>Ler Sleep_Efficiency.csv</from><to>Gravar raw_sleep_efficiency</to><enabled>Y</enabled></hop>
-    <hop><from>Ler student_performance.csv</from><to>Gravar raw_student_performance</to><enabled>Y</enabled></hop>
-    <hop><from>Ler student_habits.csv</from><to>Gravar raw_student_habits</to><enabled>Y</enabled></hop>
-    <hop><from>Ler student_mental_health.csv</from><to>Gravar raw_student_mental_health</to><enabled>Y</enabled></hop>
+    <hop><from>Ler Sleep Efficiency CSV</from><to>Add Meta Sleep</to><enabled>Y</enabled></hop>
+    <hop><from>Add Meta Sleep</from><to>Map Sleep Orig</to><enabled>Y</enabled></hop>
+    <hop><from>Map Sleep Orig</from><to>Gravar raw_sleep_efficiency</to><enabled>Y</enabled></hop>
+
+    <hop><from>Ler Student Habits CSV</from><to>Add Meta Habits</to><enabled>Y</enabled></hop>
+    <hop><from>Add Meta Habits</from><to>Map Habits Orig</to><enabled>Y</enabled></hop>
+    <hop><from>Map Habits Orig</from><to>Gravar raw_student_habits</to><enabled>Y</enabled></hop>
+
+    <hop><from>Ler Mental Health CSV</from><to>Add Meta Mental</to><enabled>Y</enabled></hop>
+    <hop><from>Add Meta Mental</from><to>Map Mental Orig</to><enabled>Y</enabled></hop>
+    <hop><from>Map Mental Orig</from><to>Gravar raw_student_mental_health</to><enabled>Y</enabled></hop>
   </order>
-  
+
+  <!-- 1. Sleep -->
   <transform>
-    <name>Ler Sleep_Efficiency.csv</name>
+    <name>Ler Sleep Efficiency CSV</name>
     <type>CsvInput</type>
     <filename>${PROJECT_HOME}/../database/Sleep_Efficiency.csv</filename>
-    <separator>,</separator>
-    <enclosure>"</enclosure>
-    <header>Y</header>
+    <separator>,</separator><enclosure>"</enclosure><header>Y</header><buffer_size>50000</buffer_size><encoding>UTF-8</encoding>
     <fields>
-      <field><name>ID</name><type>Integer</type></field>
-      <field><name>Age</name><type>Integer</type></field>
-      <field><name>Gender</name><type>String</type></field>
-      <field><name>Bedtime</name><type>String</type></field>
-      <field><name>Wakeup time</name><type>String</type></field>
-      <field><name>Sleep duration</name><type>Number</type></field>
-      <field><name>Sleep efficiency</name><type>Number</type></field>
-      <field><name>REM sleep percentage</name><type>Integer</type></field>
-      <field><name>Deep sleep percentage</name><type>Integer</type></field>
-      <field><name>Light sleep percentage</name><type>Integer</type></field>
-      <field><name>Awakenings</name><type>Integer</type></field>
-      <field><name>Caffeine consumption</name><type>Integer</type></field>
-      <field><name>Alcohol consumption</name><type>Integer</type></field>
-      <field><name>Smoking status</name><type>String</type></field>
-      <field><name>Exercise frequency</name><type>Integer</type></field>
+      <field><name>ID</name><type>String</type></field><field><name>Age</name><type>String</type></field><field><name>Gender</name><type>String</type></field>
+      <field><name>Bedtime</name><type>String</type></field><field><name>Wakeup time</name><type>String</type></field><field><name>Sleep duration</name><type>String</type></field>
+      <field><name>Sleep efficiency</name><type>String</type></field><field><name>REM sleep percentage</name><type>String</type></field><field><name>Deep sleep percentage</name><type>String</type></field>
+      <field><name>Light sleep percentage</name><type>String</type></field><field><name>Awakenings</name><type>String</type></field><field><name>Caffeine consumption</name><type>String</type></field>
+      <field><name>Alcohol consumption</name><type>String</type></field><field><name>Smoking status</name><type>String</type></field><field><name>Exercise frequency</name><type>String</type></field>
     </fields>
   </transform>
-  
   <transform>
-    <name>Gravar raw_sleep_efficiency</name>
-    <type>TableOutput</type>
-    <connection>sqlite_estudantes</connection>
-    <table>raw_sleep_efficiency</table>
-    <commit>1000</commit>
-    <truncate>Y</truncate>
-    <specify_fields>Y</specify_fields>
+    <name>Add Meta Sleep</name><type>Constant</type>
     <fields>
-      <field><column_name>id_original</column_name><stream_name>ID</stream_name></field>
-      <field><column_name>idade</column_name><stream_name>Age</stream_name></field>
-      <field><column_name>genero</column_name><stream_name>Gender</stream_name></field>
-      <field><column_name>horario_dormir</column_name><stream_name>Bedtime</stream_name></field>
-      <field><column_name>horario_acordar</column_name><stream_name>Wakeup time</stream_name></field>
-      <field><column_name>duracao_sono_horas</column_name><stream_name>Sleep duration</stream_name></field>
-      <field><column_name>eficiencia_sono</column_name><stream_name>Sleep efficiency</stream_name></field>
-      <field><column_name>perc_sono_rem</column_name><stream_name>REM sleep percentage</stream_name></field>
-      <field><column_name>perc_sono_profundo</column_name><stream_name>Deep sleep percentage</stream_name></field>
-      <field><column_name>perc_sono_leve</column_name><stream_name>Light sleep percentage</stream_name></field>
-      <field><column_name>despertares_noite</column_name><stream_name>Awakenings</stream_name></field>
-      <field><column_name>consumo_cafeina_mg</column_name><stream_name>Caffeine consumption</stream_name></field>
-      <field><column_name>consumo_alcool_dias</column_name><stream_name>Alcohol consumption</stream_name></field>
-      <field><column_name>status_fumante</column_name><stream_name>Smoking status</stream_name></field>
-      <field><column_name>freq_exercicio_semana</column_name><stream_name>Exercise frequency</stream_name></field>
+      <field><name>_loaded_at</name><type>String</type><nullif>2026-08-26 12:00:00</nullif></field>
+      <field><name>_source_file</name><type>String</type><nullif>Sleep_Efficiency.csv</nullif></field>
     </fields>
   </transform>
-  
   <transform>
-    <name>Ler student_performance.csv</name>
-    <type>CsvInput</type>
-    <filename>${PROJECT_HOME}/../database/student_performance_dataset-selected-columns.csv</filename>
-    <separator>,</separator>
-    <enclosure>"</enclosure>
-    <header>Y</header>
+    <name>Map Sleep Orig</name><type>SelectValues</type>
     <fields>
-      <field><name>Student_ID</name><type>Integer</type></field>
-      <field><name>Hours_Studied</name><type>Number</type></field>
-      <field><name>Previous_Scores</name><type>Number</type></field>
-      <field><name>Extracurricular_Activities</name><type>String</type></field>
-      <field><name>Sleep_Hours</name><type>Number</type></field>
-      <field><name>Sample_Question_Papers_Practiced</name><type>Integer</type></field>
-      <field><name>Performance_Index</name><type>Number</type></field>
+      <field><name>ID</name><rename>id_orig</rename></field><field><name>Age</name><rename>age_orig</rename></field><field><name>Gender</name><rename>gender_orig</rename></field>
+      <field><name>Bedtime</name><rename>bedtime_orig</rename></field><field><name>Wakeup time</name><rename>wakeup_time_orig</rename></field><field><name>Sleep duration</name><rename>sleep_duration_orig</rename></field>
+      <field><name>Sleep efficiency</name><rename>sleep_efficiency_orig</rename></field><field><name>REM sleep percentage</name><rename>rem_sleep_percentage_orig</rename></field><field><name>Deep sleep percentage</name><rename>deep_sleep_percentage_orig</rename></field>
+      <field><name>Light sleep percentage</name><rename>light_sleep_percentage_orig</rename></field><field><name>Awakenings</name><rename>awakenings_orig</rename></field><field><name>Caffeine consumption</name><rename>caffeine_consumption_orig</rename></field>
+      <field><name>Alcohol consumption</name><rename>alcohol_consumption_orig</rename></field><field><name>Smoking status</name><rename>smoking_status_orig</rename></field><field><name>Exercise frequency</name><rename>exercise_frequency_orig</rename></field>
+      <field><name>_loaded_at</name></field><field><name>_source_file</name></field>
+      <select_unspecified>N</select_unspecified>
     </fields>
   </transform>
-  
   <transform>
-    <name>Gravar raw_student_performance</name>
-    <type>TableOutput</type>
-    <connection>sqlite_estudantes</connection>
-    <table>raw_student_performance</table>
-    <commit>1000</commit>
-    <truncate>Y</truncate>
-    <specify_fields>Y</specify_fields>
-    <fields>
-      <field><column_name>student_id</column_name><stream_name>Student_ID</stream_name></field>
-      <field><column_name>horas_estudo</column_name><stream_name>Hours_Studied</stream_name></field>
-      <field><column_name>nota_anterior</column_name><stream_name>Previous_Scores</stream_name></field>
-      <field><column_name>atividades_extracurriculares</column_name><stream_name>Extracurricular_Activities</stream_name></field>
-      <field><column_name>horas_sono</column_name><stream_name>Sleep_Hours</stream_name></field>
-      <field><column_name>provas_simuladas_feitas</column_name><stream_name>Sample_Question_Papers_Practiced</stream_name></field>
-      <field><column_name>indice_desempenho</column_name><stream_name>Performance_Index</stream_name></field>
-    </fields>
+    <name>Gravar raw_sleep_efficiency</name><type>TableOutput</type>
+    <connection>sqlite_estudantes</connection><table>raw_sleep_efficiency</table><truncate>Y</truncate><specify_fields>N</specify_fields><commit>1000</commit>
   </transform>
 
+  <!-- 2. Habits -->
   <transform>
-    <name>Ler student_habits.csv</name>
-    <type>CsvInput</type>
+    <name>Ler Student Habits CSV</name><type>CsvInput</type>
     <filename>${PROJECT_HOME}/../database/student_habits_performance.csv</filename>
-    <separator>,</separator>
-    <enclosure>"</enclosure>
-    <header>Y</header>
+    <separator>,</separator><enclosure>"</enclosure><header>Y</header><buffer_size>50000</buffer_size><encoding>UTF-8</encoding>
     <fields>
-      <field><name>student_id</name><type>Integer</type></field>
-      <field><name>age</name><type>Integer</type></field>
-      <field><name>gender</name><type>String</type></field>
-      <field><name>study_hours_per_day</name><type>Number</type></field>
-      <field><name>social_media_hours</name><type>Number</type></field>
-      <field><name>netflix_hours</name><type>Number</type></field>
-      <field><name>exercise_frequency</name><type>Integer</type></field>
-      <field><name>diet_quality</name><type>String</type></field>
-      <field><name>exam_score</name><type>Number</type></field>
-      <field><name>mental_health_rating</name><type>Integer</type></field>
+      <field><name>Student_ID</name><type>String</type></field><field><name>Age</name><type>String</type></field><field><name>Gender</name><type>String</type></field>
+      <field><name>Study_Hours_Per_Day</name><type>String</type></field><field><name>Social_Media_Hours</name><type>String</type></field><field><name>Netflix_Hours</name><type>String</type></field>
+      <field><name>Diet_Quality</name><type>String</type></field><field><name>Exercise_Frequency</name><type>String</type></field><field><name>Mental_Health_Rating</name><type>String</type></field>
+      <field><name>Exam_Score</name><type>String</type></field>
     </fields>
   </transform>
-
   <transform>
-    <name>Gravar raw_student_habits</name>
-    <type>TableOutput</type>
-    <connection>sqlite_estudantes</connection>
-    <table>raw_student_habits</table>
-    <commit>1000</commit>
-    <truncate>Y</truncate>
-    <specify_fields>Y</specify_fields>
+    <name>Add Meta Habits</name><type>Constant</type>
     <fields>
-      <field><column_name>student_id</column_name><stream_name>student_id</stream_name></field>
-      <field><column_name>idade</column_name><stream_name>age</stream_name></field>
-      <field><column_name>genero</column_name><stream_name>gender</stream_name></field>
-      <field><column_name>horas_estudo_dia</column_name><stream_name>study_hours_per_day</stream_name></field>
-      <field><column_name>horas_redes_sociais</column_name><stream_name>social_media_hours</stream_name></field>
-      <field><column_name>horas_netflix</column_name><stream_name>netflix_hours</stream_name></field>
-      <field><column_name>freq_exercicio_semana</column_name><stream_name>exercise_frequency</stream_name></field>
-      <field><column_name>qualidade_dieta</column_name><stream_name>diet_quality</stream_name></field>
-      <field><column_name>nota_exame</column_name><stream_name>exam_score</stream_name></field>
-      <field><column_name>score_saude_mental</column_name><stream_name>mental_health_rating</stream_name></field>
+      <field><name>_loaded_at</name><type>String</type><nullif>2026-08-26 12:00:00</nullif></field>
+      <field><name>_source_file</name><type>String</type><nullif>student_habits_performance.csv</nullif></field>
+      <field><name>part_time_job_orig</name><type>String</type><nullif>No</nullif></field>
+      <field><name>attendance_percentage_orig</name><type>String</type><nullif>85.0</nullif></field>
+      <field><name>sleep_hours_orig</name><type>String</type><nullif>7.0</nullif></field>
+      <field><name>parental_education_level_orig</name><type>String</type><nullif>High School</nullif></field>
+      <field><name>internet_quality_orig</name><type>String</type><nullif>Média</nullif></field>
+      <field><name>extracurricular_participation_orig</name><type>String</type><nullif>No</nullif></field>
     </fields>
   </transform>
-
   <transform>
-    <name>Ler student_mental_health.csv</name>
-    <type>CsvInput</type>
+    <name>Map Habits Orig</name><type>SelectValues</type>
+    <fields>
+      <field><name>Student_ID</name><rename>student_id_orig</rename></field><field><name>Age</name><rename>age_orig</rename></field><field><name>Gender</name><rename>gender_orig</rename></field>
+      <field><name>Study_Hours_Per_Day</name><rename>study_hours_per_day_orig</rename></field><field><name>Social_Media_Hours</name><rename>social_media_hours_orig</rename></field><field><name>Netflix_Hours</name><rename>netflix_hours_orig</rename></field>
+      <field><name>part_time_job_orig</name></field><field><name>attendance_percentage_orig</name></field><field><name>sleep_hours_orig</name></field>
+      <field><name>Diet_Quality</name><rename>diet_quality_orig</rename></field><field><name>Exercise_Frequency</name><rename>exercise_frequency_orig</rename></field>
+      <field><name>parental_education_level_orig</name></field><field><name>internet_quality_orig</name></field><field><name>Mental_Health_Rating</name><rename>mental_health_rating_orig</rename></field>
+      <field><name>extracurricular_participation_orig</name></field><field><name>Exam_Score</name><rename>exam_score_orig</rename></field>
+      <field><name>_loaded_at</name></field><field><name>_source_file</name></field>
+      <select_unspecified>N</select_unspecified>
+    </fields>
+  </transform>
+  <transform>
+    <name>Gravar raw_student_habits</name><type>TableOutput</type>
+    <connection>sqlite_estudantes</connection><table>raw_student_habits</table><truncate>Y</truncate><specify_fields>N</specify_fields><commit>1000</commit>
+  </transform>
+
+  <!-- 3. Mental Health -->
+  <transform>
+    <name>Ler Mental Health CSV</name><type>CsvInput</type>
     <filename>${PROJECT_HOME}/../database/Student Mental health.csv</filename>
-    <separator>,</separator>
-    <enclosure>"</enclosure>
-    <header>Y</header>
+    <separator>,</separator><enclosure>"</enclosure><header>Y</header><buffer_size>50000</buffer_size><encoding>UTF-8</encoding>
     <fields>
-      <field><name>Timestamp</name><type>String</type></field>
-      <field><name>Choose your gender</name><type>String</type></field>
-      <field><name>Age</name><type>Integer</type></field>
-      <field><name>What is your course?</name><type>String</type></field>
-      <field><name>Your current year of Study</name><type>String</type></field>
-      <field><name>What is your CGPA?</name><type>String</type></field>
-      <field><name>Marital status</name><type>String</type></field>
-      <field><name>Do you have Depression?</name><type>String</type></field>
-      <field><name>Do you have Anxiety?</name><type>String</type></field>
-      <field><name>Do you have Panic attack?</name><type>String</type></field>
-      <field><name>Did you seek any specialist for a treatment?</name><type>String</type></field>
+      <field><name>Timestamp</name><type>String</type></field><field><name>Choose your gender</name><type>String</type></field><field><name>Age</name><type>String</type></field>
+      <field><name>What is your course?</name><type>String</type></field><field><name>Your current year of Study</name><type>String</type></field><field><name>What is your CGPA?</name><type>String</type></field>
+      <field><name>Marital status</name><type>String</type></field><field><name>Do you have Depression?</name><type>String</type></field><field><name>Do you have Anxiety?</name><type>String</type></field>
+      <field><name>Do you have Panic attack?</name><type>String</type></field><field><name>Did you seek any specialist treatment?</name><type>String</type></field>
     </fields>
   </transform>
-
   <transform>
-    <name>Gravar raw_student_mental_health</name>
-    <type>TableOutput</type>
-    <connection>sqlite_estudantes</connection>
-    <table>raw_student_mental_health</table>
-    <commit>1000</commit>
-    <truncate>Y</truncate>
-    <specify_fields>Y</specify_fields>
+    <name>Add Meta Mental</name><type>Constant</type>
     <fields>
-      <field><column_name>data_hora_registro</column_name><stream_name>Timestamp</stream_name></field>
-      <field><column_name>genero</column_name><stream_name>Choose your gender</stream_name></field>
-      <field><column_name>idade</column_name><stream_name>Age</stream_name></field>
-      <field><column_name>curso</column_name><stream_name>What is your course?</stream_name></field>
-      <field><column_name>ano_estudo</column_name><stream_name>Your current year of Study</stream_name></field>
-      <field><column_name>faixa_cgpa</column_name><stream_name>What is your CGPA?</stream_name></field>
-      <field><column_name>estado_civil</column_name><stream_name>Marital status</stream_name></field>
-      <field><column_name>depressao_declarada</column_name><stream_name>Do you have Depression?</stream_name></field>
-      <field><column_name>ansiedade_declarada</column_name><stream_name>Do you have Anxiety?</stream_name></field>
-      <field><column_name>panico_declarado</column_name><stream_name>Do you have Panic attack?</stream_name></field>
-      <field><column_name>tratamento_especialista</column_name><stream_name>Did you seek any specialist for a treatment?</stream_name></field>
+      <field><name>_loaded_at</name><type>String</type><nullif>2026-08-26 12:00:00</nullif></field>
+      <field><name>_source_file</name><type>String</type><nullif>Student Mental health.csv</nullif></field>
     </fields>
+  </transform>
+  <transform>
+    <name>Map Mental Orig</name><type>SelectValues</type>
+    <fields>
+      <field><name>Timestamp</name><rename>timestamp_orig</rename></field><field><name>Choose your gender</name><rename>gender_orig</rename></field><field><name>Age</name><rename>age_orig</rename></field>
+      <field><name>What is your course?</name><rename>course_orig</rename></field><field><name>Your current year of Study</name><rename>year_of_study_orig</rename></field><field><name>What is your CGPA?</name><rename>cgpa_orig</rename></field>
+      <field><name>Marital status</name><rename>marital_status_orig</rename></field><field><name>Do you have Depression?</name><rename>depression_orig</rename></field><field><name>Do you have Anxiety?</name><rename>anxiety_orig</rename></field>
+      <field><name>Do you have Panic attack?</name><rename>panic_attack_orig</rename></field><field><name>Did you seek any specialist treatment?</name><rename>treatment_orig</rename></field>
+      <field><name>_loaded_at</name></field><field><name>_source_file</name></field>
+      <select_unspecified>N</select_unspecified>
+    </fields>
+  </transform>
+  <transform>
+    <name>Gravar raw_student_mental_health</name><type>TableOutput</type>
+    <connection>sqlite_estudantes</connection><table>raw_student_mental_health</table><truncate>Y</truncate><specify_fields>N</specify_fields><commit>1000</commit>
   </transform>
 </pipeline>
