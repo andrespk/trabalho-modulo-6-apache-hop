@@ -196,12 +196,15 @@ A esteira de dados inclui a planilha oficial [valores_referenciais_kpi.xlsx](fil
 2. **`students_grade_performance_habits`** (1.000 registros)
 3. **`students_grade_performance_mental_health`** (101 registros)
 
-### 📌 Camada Platinum (KPIs Multidimensionais):
-- `kpi_resumo` (16 reg.)
-- `kpi_eficiencia_estudo` (12 reg.)
-- `kpi_risco_academico` (4 reg.)
-- `kpi_resiliencia_habitos` (4 reg.)
-- `kpi_curso_saude_mental` (15 reg.)
+### 📌 Camada Platinum (8 Tabelas de KPIs Multidimensionais):
+- `kpi_resumo` (16 reg. — Indicadores consolidados de toda a base)
+- `kpi_eficiencia_estudo` (12 reg. — ROI de estudo e eficácia horária)
+- `kpi_risco_academico` (4 reg. — Matriz de sobrecarga e risco discente)
+- `kpi_resiliencia_habitos` (4 reg. — Fator protetivo de esporte e sono)
+- `kpi_curso_saude_mental` (15 reg. — Vulnerabilidade e estresse por área de graduação)
+- `kpi_faixa_etaria_performance` (3 reg. — Efeito de maturidade: Calouros, Intermediários e Veteranos)
+- `kpi_genero_performance` (2 reg. — Comparativo multidimensional Feminino vs Masculino)
+- `kpi_habitos_vida_performance` (6 reg. — Hábitos de vida, SQD, telas e aprovação)
 
 ---
 
