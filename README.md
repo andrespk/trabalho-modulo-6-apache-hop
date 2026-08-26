@@ -3,7 +3,7 @@
 | Serviço / Aplicação | Link Direto de Acesso | Porta | Credenciais / Observações |
 |---|---|:---:|---|
 | 🌐 **Apache Hop Web (UI Web)** | [http://localhost:8085/ui](http://localhost:8085/ui) | `8085` | Interface gráfica web para edição e disparo de workflows |
-| 📊 **Metabase Dashboard (BI)** | [http://localhost:3000](http://localhost:3000) *(ou [http://localhost:3001](http://localhost:3001))* | `3000` / `3001` | Painel interativo com Donuts, Radar, Barras e KPIs |
+| 📊 **Metabase Dashboard (BI)** | [http://localhost:3001](http://localhost:3001) *(ou [http://localhost:3000](http://localhost:3000))* | `3001` / `3000` | Usuário: `admin@uea.edu.br` \| Senha: `HopAdmin2024!` |
 | ⚙️ **Apache Hop Server (Engine)** | [http://localhost:8081](http://localhost:8081) | `8081` | Usuário: `cluster` \| Senha: `cluster` |
 | 🐙 **Repositório GitHub (Público)** | [https://github.com/andrespk/trabalho-modulo-6-apache-hop](https://github.com/andrespk/trabalho-modulo-6-apache-hop) | — | Código-fonte completo, testes E2E e documentação |
 | 📑 **Apresentação Gamma** | [Link da Apresentação no Gamma](https://gamma.app/docs/Performance-de-Alunos-vs-Sono-Habitos-e-Saude-Mental-4338ehdv1j7sl1b?mode=doc) | — | Slides executivos do projeto |
@@ -512,3 +512,16 @@ Independentemente de executar via **UI Web**, **Container CLI** ou **Script E2E*
 
 *Trabalho Final — Módulo 6: Apache Hop | Curso de Inteligência Artificial — Universidade do Estado do Amazonas (UEA)*  
 *Equipe: Adriano Mourão, André Marques, Daniel Oliveira, Paulo Dourado, Thiago Leite*
+
+
+### Credenciais do Usuário Padrão no Metabase
+
+Para acessar o painel administrativo e os dashboards configurados no Metabase, utilize as credenciais padrão criadas na inicialização:
+
+| Parâmetro | Valor Padrão Configurado |
+|---|---|
+| **URL de Acesso** | [http://localhost:3001](http://localhost:3001) *(ou [http://localhost:3000](http://localhost:3000))* |
+| **E-mail / Usuário** | `admin@uea.edu.br` |
+| **Senha de Acesso** | `HopAdmin2024!` |
+| **Perfil / Papel** | Administrador da Instância (Acesso Total a Dashboards e Coleções) |
+| **Banco de Dados Conectado** | SQLite (`/data/estudantes.db` com as 19 tabelas medalhão) |
