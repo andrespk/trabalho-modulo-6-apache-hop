@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workflow>
+  <name>test_sql_file</name>
+  <name_sync_with_filename>Y</name_sync_with_filename>
+  <workflow_version>1.0</workflow_version>
+  <actions>
+    <action>
+      <name>Start</name>
+      <type>SPECIAL</type>
+      <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>60</xloc>
+      <yloc>140</yloc>
+    </action>
+    <action>
+      <name>Exec_Medallion_SQL</name>
+      <type>SQL</type>
+      <sqlfromfile>Y</sqlfromfile>
+      <sqlfilename>/files/infra/sqlite/populate_medallion.sql</sqlfilename>
+      <sendOneStatement>N</sendOneStatement>
+      <connection>sqlite_estudantes</connection>
+      <parallel>N</parallel>
+      <nr>0</nr>
+      <xloc>220</xloc>
+      <yloc>140</yloc>
+    </action>
+  </actions>
+  <hops>
+    <hop>
+      <from>Start</from>
+      <to>Exec_Medallion_SQL</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+  </hops>
+</workflow>
